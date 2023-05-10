@@ -1,6 +1,6 @@
 package org.example.tracker.service;
 
-import org.example.tracker.dao.PingRepository;
+import org.example.tracker.dao.repository.PingRepository;
 import org.example.tracker.dao.entity.PongEntity;
 import org.example.tracker.dto.Pong;
 import org.example.tracker.security.UserDetailsManager;

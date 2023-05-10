@@ -1,4 +1,4 @@
-package org.example.tracker.dao;
+package org.example.tracker.dao.repository;
 
 import org.example.tracker.dao.entity.PongEntity;
 
