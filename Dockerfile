@@ -1,8 +1,6 @@
-FROM eclipse-temurin:17-jdk-alpine as build
+FROM maven:3.9.1-eclipse-temurin-17-alpine as build
 WORKDIR /app
 
-COPY mvnw .
-COPY .mvn .mvn
 COPY pom.xml .
 
 COPY tracker-main tracker-main
@@ -12,7 +10,7 @@ COPY tracker-dto tracker-dto
 COPY tracker-dao tracker-dao
 COPY tracker-service tracker-service
 
-RUN ./mvnw -B package -DskipTests
+RUN mvn -B package -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
