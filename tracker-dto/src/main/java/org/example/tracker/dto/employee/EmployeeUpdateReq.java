@@ -2,9 +2,10 @@ package org.example.tracker.dto.employee;
 
 import lombok.Data;
 
-// создание сотрудника
+// изменение сотрудника
 @Data
-public class EmployeeReq {
+public class EmployeeUpdateReq {
+    private int id; //required
     private String firstName; //required
     private String lastName; //required
     private String middleName;

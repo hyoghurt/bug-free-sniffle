@@ -3,6 +3,6 @@ package org.example.tracker.dto.task;
 
 // изменить статус задачи
 public class TaskUpdateStatusReq {
-    private int id;
+    private int taskId;
     private TaskStatus status;
 }
