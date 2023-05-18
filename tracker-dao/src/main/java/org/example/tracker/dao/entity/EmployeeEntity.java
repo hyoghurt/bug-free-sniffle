@@ -1,7 +1,7 @@
 package org.example.tracker.dao.entity;
 
 import lombok.Data;
-import org.example.tracker.dao.enums.EmployeeStatus;
+import org.example.tracker.dto.employee.EmployeeStatus;
 
 import java.io.Serial;
 import java.io.Serializable;

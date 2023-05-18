@@ -2,7 +2,6 @@ package org.example.tracker.controller;
 
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
-import org.example.tracker.dto.employee.EmployeeUpdateReq;
 
 import java.util.List;
 
@@ -20,9 +19,10 @@ public class EmployeeController {
     /**
      * Изменение сотрудника. При редактировании сотрудника должны редактировать поля профиля сотрудника.
      * Удаленного сотрудника изменить нельзя.
+     * @param id идентификатор сотрудника
      * @param request объект с данными для обновления
      */
-    public EmployeeResp update(EmployeeUpdateReq request) {
+    public EmployeeResp update(Integer id, EmployeeReq request) {
         return null;
     }
 

@@ -13,7 +13,7 @@ public class ProjectController {
         return null;
     }
 
-    public ProjectResp update(ProjectReq request) {
+    public ProjectResp update(Integer id, ProjectReq request) {
         return null;
     }
 
@@ -21,7 +21,7 @@ public class ProjectController {
         return null;
     }
 
-    public ProjectResp updateStatus(ProjectUpdateStatusReq request) {
+    public ProjectResp updateStatus(Integer id, ProjectUpdateStatusReq request) {
         return null;
     }
 }
