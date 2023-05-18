@@ -16,17 +16,14 @@
         <dependency>
             <groupId>org.example.tracker</groupId>
             <artifactId>tracker-dao</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.example.tracker</groupId>
             <artifactId>tracker-dto</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.example.tracker</groupId>
             <artifactId>tracker-security</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

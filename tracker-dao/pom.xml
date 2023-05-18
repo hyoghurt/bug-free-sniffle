@@ -12,4 +12,11 @@
 
     <artifactId>tracker-dao</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.example.tracker</groupId>
+            <artifactId>tracker-dto</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

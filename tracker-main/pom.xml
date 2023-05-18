@@ -11,12 +11,12 @@
     </parent>
 
     <artifactId>tracker-main</artifactId>
+    <description>hello</description>
 
     <dependencies>
         <dependency>
             <groupId>org.example.tracker</groupId>
             <artifactId>tracker-controller</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
