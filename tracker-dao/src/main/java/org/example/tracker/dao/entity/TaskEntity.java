@@ -1,6 +1,7 @@
 package org.example.tracker.dao.entity;
 
-import org.example.tracker.dao.enums.TaskStatus;
+
+import org.example.tracker.dto.task.TaskStatus;
 
 import java.time.Instant;
 

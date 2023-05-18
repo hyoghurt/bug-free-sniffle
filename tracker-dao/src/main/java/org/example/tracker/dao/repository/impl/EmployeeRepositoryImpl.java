@@ -5,6 +5,7 @@ import org.example.tracker.dao.datastorage.impl.FileSystemDataStorage;
 import org.example.tracker.dao.datastorage.impl.TableImpl;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.repository.EmployeeRepository;
+import org.example.tracker.dto.employee.EmployeeStatus;
 
 import java.util.List;
 
@@ -36,8 +37,13 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         return dataStorage.getAll(EmployeeEntity.class);
     }
 
+    /**
+     * изменяет статус на DELETED
+     */
     @Override
     public void deleteById(Integer id) {
-        dataStorage.deleteById(id, EmployeeEntity.class);
+        EmployeeEntity entity = getById(id);
+        entity.setStatus(EmployeeStatus.DELETED);
+        dataStorage.update(entity);
     }
 }

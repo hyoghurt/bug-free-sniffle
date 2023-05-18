@@ -21,11 +21,9 @@ public class FileSystemDataStorage implements DataStorage {
     @SuppressWarnings("unchecked")
     private FileSystemDataStorage() {
         // инициализируем данные с файла, если файл существует
-        try {
-            FileInputStream fileInputStream = new FileInputStream(FILE_NAME);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        try (FileInputStream fileInputStream = new FileInputStream(FILE_NAME);
+             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
             tables = (Map<Class<?>, Table<?, ?>>) objectInputStream.readObject();
-            objectInputStream.close();
         } catch (FileNotFoundException e) {
             tables = new ConcurrentHashMap<>();
         } catch (IOException e) {
@@ -97,13 +95,10 @@ public class FileSystemDataStorage implements DataStorage {
     }
 
     private void writeObjectToFile() {
-        try {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(FILE_NAME)) {
-                try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
-                    objectOutputStream.writeObject(tables);
-
-                }
-            }
+        // записываем данные в файл
+        try (FileOutputStream fileOutputStream = new FileOutputStream(FILE_NAME);
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+            objectOutputStream.writeObject(tables);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
