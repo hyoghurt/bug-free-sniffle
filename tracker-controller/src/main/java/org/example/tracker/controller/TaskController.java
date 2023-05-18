@@ -6,11 +6,11 @@ import java.util.List;
 
 public class TaskController {
 
-    public TaskResp create(TaskCreateReq request) {
+    public TaskResp create(TaskReq request) {
         return null;
     }
 
-    public TaskResp update(TaskUpdateReq request) {
+    public TaskResp update(Integer id, TaskReq request) {
         return null;
     }
 
@@ -18,7 +18,7 @@ public class TaskController {
         return null;
     }
 
-    public TaskResp updateStatus(TaskUpdateStatusReq request) {
+    public TaskResp updateStatus(Integer id, TaskUpdateStatusReq request) {
         return null;
     }
 }
