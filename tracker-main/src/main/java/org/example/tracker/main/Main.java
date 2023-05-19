@@ -1,8 +1,10 @@
 package org.example.tracker.main;
 
+import org.example.tracker.dao.SearchFilter;
 import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.enums.EmployeeStatus;
 import org.example.tracker.dao.repository.impl.EmployeeRepositoryJdbc;
+import org.example.tracker.dto.employee.EmployeeStatus;
+import org.example.tracker.dto.project.ProjectStatus;
 
 import java.util.List;
 
@@ -10,21 +12,61 @@ public class Main {
 
     public static void main(String[] args) {
         EmployeeRepositoryJdbc repository = new EmployeeRepositoryJdbc();
-
         getAll(repository);
 
-        createEmployee(repository, 1);
-        createEmployee(repository, 2);
-        createEmployee(repository, 3);
-
-        getById(repository, 3);
+        // TEST CRUD
+        int id = createEmployee(repository, 1);
+        getById(repository, id);
         getAll(repository);
 
-        delete(repository, 3);
+        update(repository, id);
         getAll(repository);
 
-        update(repository, 2);
+        delete(repository, id);
         getAll(repository);
+
+        // TEST FILTER
+        SearchFilter filter = SearchFilter.builder()
+                .firstName("tes")
+                .lastName("3")
+                .projectName("NAME")
+                .build();
+        getByFilter(repository, filter);
+
+        filter = SearchFilter.builder()
+                .build();
+        getByFilter(repository, filter);
+
+        filter = SearchFilter.builder()
+                .firstName("name")
+                .build();
+        getByFilter(repository, filter);
+
+        filter = SearchFilter.builder()
+                .firstName("first")
+                .build();
+        getByFilter(repository, filter);
+
+        filter = SearchFilter.builder()
+                .lastName("2")
+                .projectName("2")
+                .build();
+        getByFilter(repository, filter);
+
+        filter = SearchFilter.builder()
+                .lastName("2")
+                .projectStatus(ProjectStatus.DRAFT)
+                .build();
+        getByFilter(repository, filter);
+    }
+
+    private static void getByFilter(EmployeeRepositoryJdbc repository, SearchFilter filter) {
+        System.out.println("--------------------------------");
+        System.out.println("FILTER " + filter);
+        List<EmployeeEntity> result = repository.getAllEmployeeByFilter(filter);
+        System.out.println("repository return: " + result);
+        System.out.println("repository return rows: " + result.size());
+        System.out.println("--------------------------------");
     }
 
     private static void update(EmployeeRepositoryJdbc repository, Integer id) {
@@ -62,23 +104,24 @@ public class Main {
         System.out.println("--------------------------------");
     }
 
-    private static void createEmployee(EmployeeRepositoryJdbc repository, Integer prefix) {
+    private static int createEmployee(EmployeeRepositoryJdbc repository, Integer prefix) {
         System.out.println("--------------------------------");
         System.out.println("CREATE " + prefix);
         int id = repository.create(createEntity(String.valueOf(prefix)));
         System.out.println("repository return: " + id);
         System.out.println("--------------------------------");
+        return id;
     }
 
     private static EmployeeEntity createEntity(String prefix) {
-        EmployeeEntity entity = new EmployeeEntity();
-        entity.setStatus(EmployeeStatus.ACTIVE);
-        entity.setUpn(prefix + "upn@com.com");
-        entity.setEmail(prefix + "hello@com.com");
-        entity.setPosition(prefix + "position_test");
-        entity.setFirstName(prefix + "first_name_test");
-        entity.setLastName(prefix + "last_name_test");
-        entity.setMiddleName(prefix + "middle_name_test");
-        return entity;
+        return EmployeeEntity.builder()
+                .status(EmployeeStatus.ACTIVE)
+                .upn(prefix + "upn@com.com")
+                .email(prefix + "hello@com.com")
+                .position(prefix + "position_test")
+                .firstName(prefix + "first_name_test")
+                .lastName(prefix + "last_name_test")
+                .middleName(prefix + "middle_name_test")
+                .build();
     }
 }

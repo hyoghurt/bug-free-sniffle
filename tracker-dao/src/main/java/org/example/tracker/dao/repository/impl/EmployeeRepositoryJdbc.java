@@ -1,7 +1,9 @@
 package org.example.tracker.dao.repository.impl;
 
+import org.example.tracker.dao.SearchFilter;
 import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.enums.EmployeeStatus;
+import org.example.tracker.dto.employee.EmployeeStatus;
+import org.example.tracker.dto.project.ProjectStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -120,30 +122,90 @@ public class EmployeeRepositoryJdbc {
         }
     }
 
+    /**
+     * изменяем статус на DELETED
+     */
     public int deleteById(Integer id) {
-        String query = "DELETE FROM employees WHERE id = ?";
+        EmployeeEntity entity = getById(id);
+        entity.setStatus(EmployeeStatus.DELETED);
+        return update(entity);
+    }
+
+    public List<EmployeeEntity> getAllEmployeeByFilter(SearchFilter filter) {
+        List<EmployeeEntity> list = new ArrayList<>();
+        List<Object> objects = new ArrayList<>();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SELECT DISTINCT "
+                + "employees.id, "
+                + "employees.email, "
+                + "employees.first_name, "
+                + "employees.last_name, "
+                + "employees.middle_name, "
+                + "employees.position, "
+                + "employees.upn, "
+                + "employees.status "
+                + "FROM employees "
+                + "JOIN teams "
+                + "ON employees.id = teams.employee_id "
+                + "JOIN projects "
+                + "ON projects.id = teams.project_id WHERE 1=1 ");
+
+        // добавляем необходимые условия
+        filter(filter.getFirstName(), "employees.first_name", stringBuilder, objects);
+        filter(filter.getLastName(), "employees.last_name", stringBuilder, objects);
+        filter(filter.getProjectName(), "projects.name", stringBuilder, objects);
+        filter(filter.getProjectStatus(), "projects.status", stringBuilder, objects);
 
         try (Connection connection = getNewConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(stringBuilder.toString())) {
 
-            statement.setInt(1, id);
-            return statement.executeUpdate();
+            // вставляем значения условий
+            for (int i = 0; i < objects.size(); i++) {
+                int index = i + 1;
+                Object obj = objects.get(i);
+                if (obj instanceof ProjectStatus) {
+                    statement.setObject(index, obj, Types.OTHER);
+                } else {
+                    statement.setObject(index, obj);
+                }
+            }
+
+            // получаем результат
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    list.add(toEmployeeEntity(rs));
+                }
+                return list;
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void filter(Object obj, String column, StringBuilder strBuild, List<Object> objects) {
+        if (obj instanceof String str) {
+            if (!str.isBlank()) {
+                strBuild.append(String.format(" AND %s ILIKE ?", column));
+                objects.add("%" + str + "%");
+            }
+        } else if (obj instanceof ProjectStatus status) {
+            strBuild.append(String.format(" AND %s = ?", column));
+            objects.add(status);
+        }
+    }
+
     private static EmployeeEntity toEmployeeEntity(ResultSet rs) throws SQLException {
-        EmployeeEntity entity = new EmployeeEntity();
-        entity.setId(rs.getInt("id"));
-        entity.setEmail(rs.getString("email"));
-        entity.setUpn(rs.getString("upn"));
-        entity.setPosition(rs.getString("position"));
-        entity.setStatus(EmployeeStatus.valueOf(rs.getString("status")));
-        entity.setFirstName(rs.getString("first_name"));
-        entity.setLastName(rs.getString("last_name"));
-        entity.setMiddleName(rs.getString("middle_name"));
-        return entity;
+        return EmployeeEntity.builder()
+                .id(rs.getInt("id"))
+                .email(rs.getString("email"))
+                .upn(rs.getString("upn"))
+                .position(rs.getString("position"))
+                .status(EmployeeStatus.valueOf(rs.getString("status")))
+                .firstName(rs.getString("first_name"))
+                .lastName(rs.getString("last_name"))
+                .middleName(rs.getString("middle_name"))
+                .build();
     }
 }

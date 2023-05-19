@@ -20,4 +20,5 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./tracker-dao/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1-create_tables.sql
+      - ./tracker-dao/src/main/resources/sql/schema.sql:/docker-entrypoint-initdb.d/1-create_tables.sql
+      - ./tracker-dao/src/main/resources/sql/data.sql:/docker-entrypoint-initdb.d/2-data_tables.sql
