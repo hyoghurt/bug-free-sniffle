@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd
+                http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.5.xsd">
+
+    <changeSet id="1.0-create-employee-status" author="he">
+        <sql>
+            CREATE TYPE "employee_status" AS ENUM (
+            'ACTIVE',
+            'DELETED'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE employee_status
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1.0-create-employees-table" author="he">
+        <createTable tableName="employees">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints nullable="false"
+                             primaryKey="true"/>
+            </column>
+            <column name="first_name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="VARCHAR(64)"/>
+            <column name="position" type="VARCHAR(64)"/>
+            <column name="upn" type="VARCHAR(128)">
+                <constraints unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(128)"/>
+            <column name="status" type="employee_status">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

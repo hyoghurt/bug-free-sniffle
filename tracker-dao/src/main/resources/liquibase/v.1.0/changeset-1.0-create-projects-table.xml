@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd
+                http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.5.xsd">
+
+    <changeSet id="1.0-create-project-status" author="he">
+        <sql>
+            CREATE TYPE "project_status" AS ENUM (
+            'DRAFT',
+            'IN_DEVELOPMENT',
+            'IN_TESTING',
+            'FINISHED'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE project_status
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1.0-create-projects-table" author="he">
+        <createTable tableName="projects">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints nullable="false"
+                             primaryKey="true"/>
+            </column>
+            <column name="code" type="VARCHAR(128)">
+                <constraints nullable="false"
+                             unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1024)"/>
+            <column name="status" type="project_status">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

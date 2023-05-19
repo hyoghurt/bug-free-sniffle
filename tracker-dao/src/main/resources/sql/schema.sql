@@ -46,7 +46,8 @@ CREATE TABLE "projects" (
 CREATE TABLE "teams" (
   "project_id"      INTEGER         NOT NULL,
   "employee_id"     INTEGER         NOT NULL,
-  "role"            employee_role   NOT NULL
+  "role"            employee_role   NOT NULL,
+  PRIMARY KEY ("project_id", "employee_id")
 );
 
 CREATE TABLE "tasks" (

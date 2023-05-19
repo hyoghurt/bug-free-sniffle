@@ -6,8 +6,8 @@ services:
 #    image: tracker-app
 #    container_name: tracker-app
 #    restart: unless-stopped
-    #ports:
-    #  - "8080:8080"
+#    ports:
+#      - "8080:8080"
 
   db:
     image: postgres:14.4
