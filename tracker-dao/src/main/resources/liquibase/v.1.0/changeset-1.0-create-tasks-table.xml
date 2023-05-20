@@ -30,7 +30,7 @@
             <column name="project_id" type="INTEGER">
                 <constraints nullable="false"
                              foreignKeyName="fk_tasks_project_id"
-                             references="project(id)"/>
+                             references="projects(id)"/>
             </column>
             <column name="title" type="VARCHAR(64)">
                 <constraints nullable="false"/>
