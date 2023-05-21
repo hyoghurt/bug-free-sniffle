@@ -1,8 +1,11 @@
 package org.example.tracker.dto.project;
 
 
-// создание проекта
-// изменение проекта
+import lombok.Data;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@SuperBuilder
 public class ProjectReq {
     private String code; //required
     private String name; //required

@@ -1,7 +1,11 @@
 package org.example.tracker.dto.task;
 
 
-// изменить статус задачи
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class TaskUpdateStatusReq {
     private TaskStatus status;
 }

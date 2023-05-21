@@ -1,8 +1,15 @@
 package org.example.tracker.dto.task;
 
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+
 import java.time.Instant;
 
+@Data
+@EqualsAndHashCode(callSuper = false)
+@SuperBuilder
 public class TaskResp extends TaskReq {
     private int id;
     private int authorId;

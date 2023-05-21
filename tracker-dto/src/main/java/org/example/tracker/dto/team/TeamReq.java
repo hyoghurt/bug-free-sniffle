@@ -1,7 +1,11 @@
 package org.example.tracker.dto.team;
 
 
-// добавить сотрудника в команду проекта
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class TeamReq {
     private int projectId; //required
     private int employeeId; //required
