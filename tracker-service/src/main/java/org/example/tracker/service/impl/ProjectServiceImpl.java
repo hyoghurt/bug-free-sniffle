@@ -5,10 +5,7 @@ import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TeamEmbeddable;
 import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dto.employee.EmployeeResp;
-import org.example.tracker.dto.project.ProjectFilterParam;
-import org.example.tracker.dto.project.ProjectReq;
-import org.example.tracker.dto.project.ProjectResp;
-import org.example.tracker.dto.project.ProjectUpdateStatusReq;
+import org.example.tracker.dto.project.*;
 import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.exception.EmployeeNotFoundException;
 import org.example.tracker.service.exception.ProjectNotFoundException;
@@ -41,8 +38,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectResp> findByParam(ProjectFilterParam param) {
-        //TODO create filter
-        return null;
+        List<ProjectEntity> entities = projectRepository.findByFilter(param);
+        return entities.stream()
+                .map(modelMapper::toProjectResp)
+                .collect(Collectors.toList());
     }
 
     @Override

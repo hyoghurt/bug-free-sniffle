@@ -7,14 +7,20 @@
     <parent>
         <groupId>org.example.tracker</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>tracker-dao</artifactId>
 
+
     <dependencies>
         <dependency>
-            <groupId>org.example.tracker</groupId>
+            <groupId>io.hypersistence</groupId>
+            <artifactId>hypersistence-utils-hibernate-62</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tracker-dto</artifactId>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
@@ -22,6 +28,14 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
         </dependency>
     </dependencies>
 

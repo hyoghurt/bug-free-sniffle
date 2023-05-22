@@ -1,10 +1,12 @@
 package org.example.tracker.dao.entity;
 
 
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.tracker.dto.project.ProjectStatus;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -19,6 +21,7 @@ import java.util.Set;
 @Entity
 @Table(name = "projects")
 public class ProjectEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -27,6 +30,9 @@ public class ProjectEntity {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Type(value = PostgreSQLEnumType.class) // нужен, если используется тип ENUM в Postgres https://vladmihalcea.com/the-best-way-to-map-an-enum-type-with-jpa-and-hibernate/
+    @Column(columnDefinition = "project_status") // указываем как называется тип в Postgres
+    @Builder.Default // https://www.baeldung.com/lombok-builder-default-value
     private ProjectStatus status = ProjectStatus.DRAFT;
 
     @ElementCollection

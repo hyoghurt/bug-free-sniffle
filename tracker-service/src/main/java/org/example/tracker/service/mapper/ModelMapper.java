@@ -7,6 +7,7 @@ import org.example.tracker.dao.entity.TeamEmbeddable;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.project.ProjectReq;
+import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.task.TaskReq;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.springframework.stereotype.Component;
@@ -56,10 +57,31 @@ public class ModelMapper {
                 .build();
     }
 
-    public TeamEmbeddable toTeamEmbeddable(EmployeeEntity employeeEntity, EmployeeRole role) {
+    public TeamEmbeddable toTeamEmbeddable(EmployeeEntity entity, EmployeeRole role) {
         return TeamEmbeddable.builder()
                 .role(role)
-                .employee(employeeEntity)
+                .employee(entity)
                 .build();
+    }
+
+    public ProjectResp toProjectResp(ProjectEntity entity) {
+        ProjectResp dto = new ProjectResp();
+        dto.setId(entity.getId());
+        dto.setCode(entity.getCode());
+        dto.setName(entity.getName());
+        dto.setDescription(entity.getDescription());
+        dto.setStatus(entity.getStatus());
+        return dto;
+
+
+/*
+        return ProjectResp.builder()
+                .id(entity.getId())
+                .code(entity.getCode())
+                .name(entity.getName())
+                .description(entity.getDescription())
+                .status(entity.getStatus())
+                .build();
+*/
     }
 }
