@@ -1,5 +1,6 @@
 package org.example.tracker.dao.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import org.example.tracker.dto.employee.EmployeeStatus;
 
@@ -7,6 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
+@Builder
 public class EmployeeEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 42L;

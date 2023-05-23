@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <preConditions>
+        <not>
+            <tableExists tableName="employees"/>
+        </not>
+    </preConditions>
+
+    <changeSet id="1.0-create-employees-table" author="ilfat">
+        <createTable tableName="employees">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints nullable="false"
+                             primaryKey="true"/>
+            </column>
+            <column name="first_name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="VARCHAR(64)"/>
+            <column name="position" type="VARCHAR(64)"/>
+            <column name="upn" type="VARCHAR(128)">
+                <constraints unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(128)"/>
+            <column name="status" type="employee_status">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

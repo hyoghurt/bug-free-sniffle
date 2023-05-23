@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <preConditions>
+        <not>
+            <tableExists tableName="tasks"/>
+        </not>
+    </preConditions>
+
+    <changeSet id="1.0-create-tasks-table" author="ilfat">
+        <createTable tableName="tasks">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints nullable="false"
+                             primaryKey="true"/>
+            </column>
+            <column name="project_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_tasks_project_id"
+                             references="projects(id)"/>
+            </column>
+            <column name="title" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1024)"/>
+            <column name="assignees_id" type="INTEGER">
+                <constraints foreignKeyName="fk_tasks_assignees_id"
+                             references="employees(id)"/>
+            </column>
+            <column name="author_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_tasks_author_id"
+                             references="employees(id)"/>
+            </column>
+            <column name="status" type="task_status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="labor_costs_in_hours" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_datetime" type="TIMESTAMP(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_datetime" type="TIMESTAMP(3)"/>
+            <column name="deadline_datetime" type="TIMESTAMP(3)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

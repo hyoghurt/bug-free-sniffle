@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <preConditions>
+        <not>
+            <tableExists tableName="employee_role"/>
+        </not>
+    </preConditions>
+
+    <changeSet id="1.0-create-employee-role" author="ilfat">
+        <sql>
+            CREATE TYPE "employee_role" AS ENUM (
+            'ANALYST',
+            'DEVELOPER',
+            'TESTER',
+            'PROJECT_MANAGER'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE employee_role
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <preConditions>
+        <not>
+            <tableExists tableName="project_status"/>
+        </not>
+    </preConditions>
+
+    <changeSet id="1.0-create-project-status" author="ilfat">
+        <sql>
+            CREATE TYPE "project_status" AS ENUM (
+            'DRAFT',
+            'IN_DEVELOPMENT',
+            'IN_TESTING',
+            'FINISHED'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE project_status
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
