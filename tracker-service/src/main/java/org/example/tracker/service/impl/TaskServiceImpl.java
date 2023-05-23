@@ -5,7 +5,6 @@ import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TaskEntity;
 import org.example.tracker.dao.repository.TaskRepository;
-import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.dto.task.TaskFilterParam;
 import org.example.tracker.dto.task.TaskReq;
 import org.example.tracker.dto.task.TaskResp;
@@ -34,6 +33,7 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectService projectService;
 
     @Override
+    @Transactional
     public TaskResp create(TaskReq request) {
         //TODO controller validate createdDatetime + трудозатраты <= deadline
         TaskEntity entity = modelMapper.toTaskEntity(request);
@@ -46,6 +46,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskResp update(Integer id, TaskReq request) {
         TaskEntity entity = getTaskEntity(id);
 
@@ -93,10 +94,8 @@ public class TaskServiceImpl implements TaskService {
         // проверка что исполнитель не удален
         validateEmployeeNotDeleted(assigneesEntity);
 
-        // получить проект
-        ProjectEntity projectEntity = projectService.getProjectEntity(projectId);
-
         // проверка что исполнитель в команде проекта
+        ProjectEntity projectEntity = projectService.getProjectEntity(projectId);
         validateEmployeeInTeam(projectEntity, assigneesEntity);
 
         taskEntity.setAssigneesId(assigneesEntity);
@@ -105,14 +104,14 @@ public class TaskServiceImpl implements TaskService {
 
     private void validateEmployeeInTeam(ProjectEntity projectEntity, EmployeeEntity employeeEntity) {
         if (employeeEntity == null) return;
-        if (projectEntity.getTeams().stream().noneMatch(t -> t.getEmployee().equals(employeeEntity))) {
+        if (!projectService.isInTeam(projectEntity, employeeEntity.getId())) {
             throw new EmployeeNotFoundInTeamException("employee " + employeeEntity.getId() + " not found in team");
         }
     }
 
     private void validateEmployeeNotDeleted(EmployeeEntity employeeEntity) {
         if (employeeEntity == null) return;
-        if (employeeEntity.getStatus().equals(EmployeeStatus.DELETED)) {
+        if (employeeService.isDeleted(employeeEntity)) {
             throw new EmployeeAlreadyDeletedException("employee already deleted: " + employeeEntity.getId());
         }
     }

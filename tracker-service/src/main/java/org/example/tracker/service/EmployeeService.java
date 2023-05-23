@@ -20,4 +20,6 @@ public interface EmployeeService {
     List<EmployeeResp> find(String query);
 
     EmployeeEntity getEmployeeEntity(Integer id);
+
+    boolean isDeleted(EmployeeEntity entity);
 }

@@ -2,7 +2,6 @@ package org.example.tracker.service;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dao.entity.TeamEmbeddable;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.project.ProjectFilterParam;
 import org.example.tracker.dto.project.ProjectReq;
@@ -44,4 +43,6 @@ public interface ProjectService {
      * @param projectId идентификатор проекта
      */
     List<EmployeeResp> getAllEmployee(Integer projectId);
+
+    boolean isInTeam(ProjectEntity projectEntity, Integer employeeId);
 }

@@ -8,10 +8,10 @@ import org.example.tracker.dto.employee.EmployeeStatus;
 
 import java.util.List;
 
-public class EmployeeRepositoryImpl {
+public class EmployeeRepositoryCustom {
     private final DataStorage dataStorage;
 
-    public EmployeeRepositoryImpl() {
+    public EmployeeRepositoryCustom() {
         dataStorage = FileSystemDataStorage.getInstance();
         dataStorage.addTable(new TableImpl<EmployeeEntity, Integer>("id"), EmployeeEntity.class);
     }

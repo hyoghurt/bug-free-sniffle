@@ -7,9 +7,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.example.tracker.dao.entity.TaskEntity;
-import org.example.tracker.dao.repository.TaskFilterRepository;
+import org.example.tracker.dao.repository.TaskRepositoryCustom;
 import org.example.tracker.dto.task.TaskFilterParam;
-import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -17,8 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class TaskFilterRepositoryCriteriaImpl implements TaskFilterRepository {
+public class TaskRepositoryCustomImpl implements TaskRepositoryCustom {
 
     @PersistenceContext
     EntityManager entityManager;
