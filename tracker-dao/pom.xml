@@ -12,7 +12,6 @@
 
     <artifactId>tracker-dao</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>io.hypersistence</groupId>

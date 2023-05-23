@@ -6,13 +6,23 @@
                 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <preConditions>
-        <dbms type="postgresql"/>
+        <not>
+            <tableExists tableName="task_status"/>
+        </not>
     </preConditions>
 
-    <changeSet author="ilfat" id="init">
-        <tagDatabase tag="init"/>
+    <changeSet id="1.0-create-task-status" author="ilfat">
+        <sql>
+            CREATE TYPE "task_status" AS ENUM (
+            'OPEN',
+            'IN_PROCESS',
+            'DONE',
+            'CLOSED'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE task_status
+        </rollback>
     </changeSet>
-
-    <include file="v.1.0/changelog-1.0.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -6,13 +6,23 @@
                 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <preConditions>
-        <dbms type="postgresql"/>
+        <not>
+            <tableExists tableName="project_status"/>
+        </not>
     </preConditions>
 
-    <changeSet author="ilfat" id="init">
-        <tagDatabase tag="init"/>
+    <changeSet id="1.0-create-project-status" author="ilfat">
+        <sql>
+            CREATE TYPE "project_status" AS ENUM (
+            'DRAFT',
+            'IN_DEVELOPMENT',
+            'IN_TESTING',
+            'FINISHED'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE project_status
+        </rollback>
     </changeSet>
-
-    <include file="v.1.0/changelog-1.0.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

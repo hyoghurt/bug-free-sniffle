@@ -6,13 +6,21 @@
                 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <preConditions>
-        <dbms type="postgresql"/>
+        <not>
+            <tableExists tableName="employee_status"/>
+        </not>
     </preConditions>
 
-    <changeSet author="ilfat" id="init">
-        <tagDatabase tag="init"/>
+    <changeSet id="1.0-create-employee-status" author="ilfat">
+        <sql>
+            CREATE TYPE "employee_status" AS ENUM (
+            'ACTIVE',
+            'DELETED'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE employee_status
+        </rollback>
     </changeSet>
-
-    <include file="v.1.0/changelog-1.0.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
