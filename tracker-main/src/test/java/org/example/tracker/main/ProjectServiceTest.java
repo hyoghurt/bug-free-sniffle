@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,49 +32,40 @@ class ProjectServiceTest extends BaseTest {
     @BeforeEach
     void before() {
         System.out.println("CREATE PROJECT ENTITIES--------------------------");
-        entities.add(genProjectEntity("code20", "name", "desc", "DRAFT"));
-        entities.add(genProjectEntity("code21", "name", "desc", "DRAFT"));
-        entities.add(genProjectEntity("code22", "name", "desc", "IN_TESTING"));
-        entities.add(genProjectEntity("code_test", "name", "desc", "DRAFT"));
-        entities.add(genProjectEntity("test_code", "name", "desc", "IN_TESTING"));
-        entities.add(genProjectEntity("ctestc", "name", "desc", "FINISHED"));
-        entities.add(genProjectEntity("cteSTc", "name", "desc", "FINISHED"));
-        entities.add(genProjectEntity("test", "name", "desc", "IN_TESTING"));
-        entities.add(genProjectEntity("code1", "test", "desc", "IN_TESTING"));
-        entities.add(genProjectEntity("code2", "testname", "desc", "FINISHED"));
-        entities.add(genProjectEntity("code3", "nameTest", "desc", "IN_TESTING"));
-        entities.add(genProjectEntity("code43", "name", null, "DRAFT"));
-        initCreate();
-    }
-
-    void initCreate() {
-        entities.forEach(e -> {
-            ProjectEntity save = repository.save(e);
-            e.setId(save.getId());
-        });
+        entities.add(repository.save(genProjectEntity("code20", "name", "desc", "DRAFT")));
+        entities.add(repository.save(genProjectEntity("code21", "name", "desc", "DRAFT")));
+        entities.add(repository.save(genProjectEntity("code22", "name", "desc", "IN_TESTING")));
+        entities.add(repository.save(genProjectEntity("code_test", "name", "desc", "DRAFT")));
+        entities.add(repository.save(genProjectEntity("test_code", "name", "desc", "IN_TESTING")));
+        entities.add(repository.save(genProjectEntity("ctestc", "name", "desc", "FINISHED")));
+        entities.add(repository.save(genProjectEntity("cteSTc", "name", "desc", "FINISHED")));
+        entities.add(repository.save(genProjectEntity("test", "name", "desc", "IN_TESTING")));
+        entities.add(repository.save(genProjectEntity("code1", "test", "desc", "IN_TESTING")));
+        entities.add(repository.save(genProjectEntity("code2", "testname", "desc", "FINISHED")));
+        entities.add(repository.save(genProjectEntity("code3", "nameTest", "desc", "IN_TESTING")));
+        entities.add(repository.save(genProjectEntity("code43", "name", null, "DRAFT")));
     }
 
     @Test
     void create() {
-        ProjectReq request = genProjectReq("code", "name");
-        ProjectResp resp = service.create(request);
+        ProjectResp resp = createRandomProject();
         assertEquals(resp.getStatus(), ProjectStatus.DRAFT);
     }
 
     @Test
-    void createDuplicateException() {
-        ProjectReq request = genProjectReq("codeDuplicate", "name");
-        service.create(request);
-        ProjectReq request2 = genProjectReq("codeDuplicate", "name2");
-        assertThrows(DuplicateUniqueFieldException.class, () -> service.create(request2));
+    void create_duplicateException() {
+        ProjectResp resp = createRandomProject();
+        ProjectReq request = genProjectReq(resp.getCode(), "name");
+        assertThrows(DuplicateUniqueFieldException.class, () -> service.create(request));
     }
 
     @Test
     void update() {
-        ProjectReq request = genProjectReq("code", "name");
-        ProjectResp resp = service.create(request);
-        ProjectReq update = genProjectReq("codeUpdate", "nameUpdate");
+        ProjectResp resp = createRandomProject();
+
+        ProjectReq update = genProjectReq(UUID.randomUUID().toString(), "nameUpdate");
         ProjectResp actual = service.update(resp.getId(), update);
+
         ProjectResp expected = ProjectResp.builder()
                 .id(resp.getId())
                 .code(update.getCode())
@@ -86,24 +78,21 @@ class ProjectServiceTest extends BaseTest {
 
     @Test
     void update_duplicateException() {
-        ProjectReq request = genProjectReq("codeDuplicate", "name");
-        ProjectResp resp = service.create(request);
-        ProjectReq request2 = genProjectReq("code2Duplicate", "name");
-        ProjectResp resp2 = service.create(request2);
-        ProjectReq update = genProjectReq("codeDuplicate", "nameUpdate");
-
+        ProjectResp resp = createRandomProject();
+        ProjectResp resp2 = createRandomProject();
+        ProjectReq update = genProjectReq(resp.getCode(), "nameUpdate");
         assertThrows(DuplicateUniqueFieldException.class, () -> service.update(resp2.getId(), update));
     }
 
     @Test
     void update_status() {
-        ProjectReq request = genProjectReq("code", "name");
-        ProjectResp resp = service.create(request);
+        ProjectResp resp = createRandomProject();
         assertEquals(resp.getStatus(), ProjectStatus.DRAFT);
 
         ProjectUpdateStatusReq statusReq = ProjectUpdateStatusReq.builder()
                 .status(ProjectStatus.IN_DEVELOPMENT)
                 .build();
+
         service.updateStatus(resp.getId(), statusReq);
         ProjectEntity entity = service.getProjectEntity(resp.getId());
         assertEquals(entity.getStatus(), ProjectStatus.IN_DEVELOPMENT);
@@ -128,6 +117,7 @@ class ProjectServiceTest extends BaseTest {
         ProjectFilterParam param = ProjectFilterParam.builder()
                 .query(search)
                 .build();
+
         List<ProjectResp> actual = service.findByParam(param);
         assertEquals(entities.stream()
                 .filter(e -> e.getName().toUpperCase().contains(search.toUpperCase())
@@ -140,6 +130,7 @@ class ProjectServiceTest extends BaseTest {
     void filterNull() {
         ProjectFilterParam param = ProjectFilterParam.builder()
                 .build();
+
         List<ProjectResp> actual = service.findByParam(param);
         assertEquals(entities.stream()
                 .map(modelMapper::toProjectResp)
@@ -152,6 +143,7 @@ class ProjectServiceTest extends BaseTest {
         ProjectFilterParam param = ProjectFilterParam.builder()
                 .statuses(statuses)
                 .build();
+
         List<ProjectResp> actual = service.findByParam(param);
         assertEquals(entities.stream()
                 .filter(e -> statuses.stream().anyMatch(s -> e.getStatus().equals(s)))
@@ -167,6 +159,7 @@ class ProjectServiceTest extends BaseTest {
                 .query(search)
                 .statuses(statuses)
                 .build();
+
         List<ProjectResp> actual = service.findByParam(param);
         assertEquals(entities.stream()
                 .filter(e ->
@@ -176,5 +169,10 @@ class ProjectServiceTest extends BaseTest {
                 )
                 .map(modelMapper::toProjectResp)
                 .collect(Collectors.toList()), actual);
+    }
+
+    ProjectResp createRandomProject() {
+        ProjectReq request = genProjectReq(UUID.randomUUID().toString(), "name");
+        return service.create(request);
     }
 }

@@ -1,24 +1,18 @@
 package org.example.tracker.dao.repository.impl;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.apache.commons.lang3.ObjectUtils;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.repository.ProjectRepositoryCustom;
 import org.example.tracker.dto.project.ProjectFilterParam;
-import org.example.tracker.dto.project.ProjectStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ProjectRepositoryCustomImpl implements ProjectRepositoryCustom {
-    @PersistenceContext
-    EntityManager entityManager;
+public class ProjectRepositoryCustomImpl extends BaseCriteriaRepository implements ProjectRepositoryCustom {
 
     @Override
     public List<ProjectEntity> findByFilter(ProjectFilterParam filter) {
@@ -27,45 +21,32 @@ public class ProjectRepositoryCustomImpl implements ProjectRepositoryCustom {
         Root<ProjectEntity> root = criteriaQuery.from(ProjectEntity.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        findSearchPredicate(filter, builder, root).ifPresent(predicates::add);
-        findStatusPredicate(filter, root).ifPresent(predicates::add);
+        findInPredicate("status", filter.getStatuses(), root)
+                .ifPresent(predicates::add);
 
-        criteriaQuery.select(root)
-                .where(
-                        builder.and(
-                                predicates.toArray(new Predicate[0])
-                        )
-                );
+        findOrLikeIgnoreCasePredicate(List.of("name", "code"), filter.getQuery(), builder, root)
+                .ifPresent(predicates::add);
+
+        criteriaQuery
+                .select(root)
+                .where(builder.and(predicates.toArray(new Predicate[0])));
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
-    private static Optional<Predicate> findStatusPredicate(ProjectFilterParam filter, Root<ProjectEntity> root) {
-        List<ProjectStatus> statuses = filter.getStatuses();
-        if (ObjectUtils.isNotEmpty(statuses)) {
-            Predicate predicate = root.get("status").in(
-                    statuses
-            );
-            return Optional.of(predicate);
-        }
-        return Optional.empty();
-    }
+    static Optional<Predicate> findOrLikeIgnoreCasePredicate(List<String> fields, String value, CriteriaBuilder builder,
+                                                   Root<ProjectEntity> root) {
+        List<Predicate> predicates = new ArrayList<>();
 
-    private static Optional<Predicate> findSearchPredicate(ProjectFilterParam filter, CriteriaBuilder builder,
-                                                           Root<ProjectEntity> root) {
-        String search = filter.getQuery();
-        if (search != null && !search.isBlank()) {
-            final String value = "%" + search.toUpperCase() + "%";
-            Predicate predicate = builder.or(
-                    builder.like(
-                            builder.upper(root.get("code")), value
-                    ),
-                    builder.like(
-                            builder.upper(root.get("name")), value
-                    )
-            );
+        for (String field : fields) {
+            findLikeIgnoreCasePredicate(field, value, builder, root).ifPresent(predicates::add);
+        }
+
+        if (!predicates.isEmpty()) {
+            Predicate predicate = builder.or(predicates.toArray(new Predicate[0]));
             return Optional.of(predicate);
         }
+
         return Optional.empty();
     }
 }

@@ -98,8 +98,8 @@ public class TaskServiceImpl implements TaskService {
         ProjectEntity projectEntity = projectService.getProjectEntity(projectId);
         validateEmployeeInTeam(projectEntity, assigneesEntity);
 
-        taskEntity.setAssigneesId(assigneesEntity);
-        taskEntity.setProjectId(projectEntity);
+        taskEntity.setAssignees(assigneesEntity);
+        taskEntity.setProject(projectEntity);
     }
 
     private void validateEmployeeInTeam(ProjectEntity projectEntity, EmployeeEntity employeeEntity) {

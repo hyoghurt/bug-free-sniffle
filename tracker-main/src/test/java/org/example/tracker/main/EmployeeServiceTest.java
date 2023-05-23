@@ -15,12 +15,13 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, statements = "delete from employees")
-class EmployeeServiceTest extends BaseTest{
+class EmployeeServiceTest extends BaseTest {
     @Autowired
     EmployeeService service;
     @Autowired
@@ -28,15 +29,14 @@ class EmployeeServiceTest extends BaseTest{
 
     @Test
     void create() {
-        EmployeeReq request = genEmployeeReq("upn", "first", "last");
-        EmployeeResp resp = service.create(request);
-        assertEquals(resp.getStatus(), EmployeeStatus.ACTIVE);
+        EmployeeResp resp = createRandomEmployee();
+        EmployeeResp actual = service.getById(resp.getId());
+        assertEquals(actual.getStatus(), EmployeeStatus.ACTIVE);
     }
 
     @Test
     void delete() {
-        EmployeeReq request = genEmployeeReq("upn", "first", "last");
-        EmployeeResp resp = service.create(request);
+        EmployeeResp resp = createRandomEmployee();
         service.delete(resp.getId());
         EmployeeResp actual = service.getById(resp.getId());
         assertEquals(actual.getStatus(), EmployeeStatus.DELETED);
@@ -44,10 +44,9 @@ class EmployeeServiceTest extends BaseTest{
 
     @Test
     void update() {
-        EmployeeReq request = genEmployeeReq("upn", "first", "last");
-        EmployeeResp resp = service.create(request);
+        EmployeeResp resp = createRandomEmployee();
 
-        EmployeeReq update = genEmployeeReq("upnUpdate", "firstUpdate", "lastUpdate");
+        EmployeeReq update = genEmployeeReq(UUID.randomUUID().toString(), "firstUpdate", "lastUpdate");
         service.update(resp.getId(), update);
 
         EmployeeResp actual = service.getById(resp.getId());
@@ -63,53 +62,32 @@ class EmployeeServiceTest extends BaseTest{
     }
 
     @Test
-    void createDuplicateUpnException() {
-        EmployeeReq request = genEmployeeReq("upnDuplicate", "firstDuplicate", "lastDuplicate");
-        service.create(request);
-
-        EmployeeReq request2 = genEmployeeReq("upnDuplicate", "firstDuplicate", "lastDuplicate");
-        assertThrows(DuplicateUniqueFieldException.class, () -> service.create(request2));
+    void create_duplicateUpnException() {
+        EmployeeResp resp = createRandomEmployee();
+        EmployeeReq request = genEmployeeReq(resp.getUpn(), "firstDuplicate", "lastDuplicate");
+        assertThrows(DuplicateUniqueFieldException.class, () -> service.create(request));
     }
 
     @Test
-    void updateDuplicateUpnException() {
-        EmployeeReq request = genEmployeeReq("upnDuplicate", "firstDuplicate", "lastDuplicate");
-        service.create(request);
-
-        EmployeeReq request2 = genEmployeeReq("upn2Duplicate", "first2Duplicate", "last2Duplicate");
-        EmployeeResp save = service.create(request2);
-
-        EmployeeReq update = genEmployeeReq("upnDuplicate", "first2Duplicate", "last2Duplicate");
-
-        assertThrows(DuplicateUniqueFieldException.class, () -> service.update(save.getId(), update));
+    void update_duplicateUpnException() {
+        EmployeeResp resp = createRandomEmployee();
+        EmployeeResp resp2 = createRandomEmployee();
+        EmployeeReq update = genEmployeeReq(resp.getUpn(), resp2.getFirstName(), resp2.getLastName());
+        assertThrows(DuplicateUniqueFieldException.class, () -> service.update(resp2.getId(), update));
     }
 
     @Test
-    void requiredFieldException() {
-        EmployeeReq request = EmployeeReq.builder()
-                .upn("upnDuplicate")
-                .build();
-
+    void create_requiredFieldException() {
+        EmployeeReq request = EmployeeReq.builder().upn(UUID.randomUUID().toString()).build();
         assertThrows(RequiredFieldException.class, () -> service.create(request));
     }
 
     @Test
-    void alreadyDeletedException() {
-        EmployeeEntity entity = EmployeeEntity.builder()
-                .upn("deleted")
-                .firstName("deletedName")
-                .lastName("deletedName")
-                .status(EmployeeStatus.DELETED)
-                .build();
-
-        EmployeeEntity save = repository.save(entity);
-        EmployeeReq request = EmployeeReq.builder()
-                .upn("deletedUpdate")
-                .firstName("deletedNameUpdate")
-                .lastName("deletedNameUpdate")
-                .build();
-
-        assertThrows(EmployeeAlreadyDeletedException.class, () -> service.update(save.getId(), request));
+    void update_alreadyDeletedException() {
+        EmployeeResp resp = createRandomEmployee();
+        service.delete(resp.getId());
+        EmployeeReq request = genEmployeeReq(resp.getUpn(), "first", "last");
+        assertThrows(EmployeeAlreadyDeletedException.class, () -> service.update(resp.getId(), request));
     }
 
     @Test
@@ -117,18 +95,13 @@ class EmployeeServiceTest extends BaseTest{
         List<EmployeeEntity> entities = new ArrayList<>();
 
         System.out.println("CREATE Employee ENTITIES--------------------------");
-        entities.add(genEmployeeEntity("testName", "last", null, null, null, null, EmployeeStatus.ACTIVE));
-        entities.add(genEmployeeEntity("name", "lastTest", null, null, null, null, EmployeeStatus.ACTIVE));
-        entities.add(genEmployeeEntity("name", "last", "midtestname", null, null, null, EmployeeStatus.ACTIVE));
-        entities.add(genEmployeeEntity("name", "last", null, "testmail", null, null, EmployeeStatus.ACTIVE));
-        entities.add(genEmployeeEntity("name", "last", null, null, "testupn", null, EmployeeStatus.ACTIVE));
-        entities.add(genEmployeeEntity("name", "last", null, null, null, "postest", EmployeeStatus.ACTIVE));
-        entities.add(genEmployeeEntity("testFirst", "testLast", "testMiddle", "testEmail", "testUpn", "testPosition", EmployeeStatus.DELETED));
-
-        entities.forEach(e -> {
-            EmployeeEntity save = repository.save(e);
-            e.setId(save.getId());
-        });
+        entities.add(repository.save(genEmployeeEntity("testName", "last", null, null, null, null, EmployeeStatus.ACTIVE)));
+        entities.add(repository.save(genEmployeeEntity("name", "lastTest", null, null, null, null, EmployeeStatus.ACTIVE)));
+        entities.add(repository.save(genEmployeeEntity("name", "last", "midtestname", null, null, null, EmployeeStatus.ACTIVE)));
+        entities.add(repository.save(genEmployeeEntity("name", "last", null, "testmail", null, null, EmployeeStatus.ACTIVE)));
+        entities.add(repository.save(genEmployeeEntity("name", "last", null, null, "testupn", null, EmployeeStatus.ACTIVE)));
+        entities.add(repository.save(genEmployeeEntity("name", "last", null, null, null, "postest", EmployeeStatus.ACTIVE)));
+        entities.add(repository.save(genEmployeeEntity("testFirst", "testLast", "testMiddle", "testEmail", "testUpn", "testPosition", EmployeeStatus.DELETED)));
 
         String search = "tEst";
         List<EmployeeResp> actual = service.find(search);
@@ -143,7 +116,11 @@ class EmployeeServiceTest extends BaseTest{
                                 e.getStatus().equals(EmployeeStatus.ACTIVE)
                         )
                 ).map(modelMapper::toEmployeeResp).toList();
-
         assertEquals(expected, actual);
+    }
+
+    EmployeeResp createRandomEmployee() {
+        EmployeeReq request = genEmployeeReq(UUID.randomUUID().toString(), "first", "last");
+        return service.create(request);
     }
 }

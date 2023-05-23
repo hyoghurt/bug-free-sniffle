@@ -26,14 +26,14 @@ public class TaskEntity {
 
     @ManyToOne
     @JoinColumn(name = "project_id")
-    private ProjectEntity projectId;
+    private ProjectEntity project;
 
     private String title;
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "assignees_id")
-    private EmployeeEntity assigneesId;
+    private EmployeeEntity assignees;
 
     private Integer authorId;
 
