@@ -127,4 +127,10 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(team -> modelMapper.toEmployeeResp(team.getEmployee()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public boolean isInTeam(ProjectEntity projectEntity, Integer employeeId) {
+        return projectEntity.getTeams().stream()
+                .anyMatch(t -> t.getEmployee().getId().equals(employeeId));
+    }
 }

@@ -98,4 +98,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("not found " + id));
     }
+
+    @Override
+    public boolean isDeleted(EmployeeEntity entity) {
+        return entity.getStatus().equals(EmployeeStatus.DELETED);
+    }
 }

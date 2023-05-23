@@ -5,6 +5,6 @@ import org.example.tracker.dto.project.ProjectFilterParam;
 
 import java.util.List;
 
-public interface ProjectFilterRepository {
-    List<ProjectEntity> findByFilter(ProjectFilterParam filter);
+public interface ProjectRepositoryCustom {
+    public List<ProjectEntity> findByFilter(ProjectFilterParam filter);
 }

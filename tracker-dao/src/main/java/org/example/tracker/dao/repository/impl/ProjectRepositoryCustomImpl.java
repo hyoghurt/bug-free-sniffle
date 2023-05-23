@@ -8,17 +8,15 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.apache.commons.lang3.ObjectUtils;
 import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dao.repository.ProjectFilterRepository;
+import org.example.tracker.dao.repository.ProjectRepositoryCustom;
 import org.example.tracker.dto.project.ProjectFilterParam;
 import org.example.tracker.dto.project.ProjectStatus;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class ProjectFilterRepositoryCriteriaImpl implements ProjectFilterRepository {
+public class ProjectRepositoryCustomImpl implements ProjectRepositoryCustom {
     @PersistenceContext
     EntityManager entityManager;
 

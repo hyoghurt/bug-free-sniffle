@@ -23,7 +23,9 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <postgresql.version>42.6.0</postgresql.version>
+        <hypersistence.utils.version>3.3.2</hypersistence.utils.version>
     </properties>
 
     <modules>
@@ -69,6 +71,12 @@
                 <version>${postgresql.version}</version>
                 <scope>runtime</scope>
             </dependency>
+            <dependency>
+                <groupId>io.hypersistence</groupId>
+                <artifactId>hypersistence-utils-hibernate-62</artifactId>
+                <version>${hypersistence.utils.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
