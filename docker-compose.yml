@@ -1,24 +1,27 @@
 version: "3.9"
 
 services:
-#  app:
-#    build: .
-#    image: tracker-app
-#    container_name: tracker-app
-#    restart: unless-stopped
-#    ports:
-#      - "8080:8080"
+  app:
+    build: .
+    image: tracker-app
+    container_name: tracker-app
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DATASOURCE_URL: ${DATASOURCE_URL}
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+    ports:
+      - "8080:8080"
 
   db:
     image: postgres:14.4
     container_name: postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: tracker
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: example
+      POSTGRES_DB: ${DATASOURCE_DB}
+      POSTGRES_USER: ${DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
     ports:
       - "5432:5432"
-        #    volumes:
-        #      - ./tracker-dao/src/main/resources/sql/schema.sql:/docker-entrypoint-initdb.d/1-create_tables.sql
-        #      - ./tracker-dao/src/main/resources/sql/data.sql:/docker-entrypoint-initdb.d/2-data_tables.sql

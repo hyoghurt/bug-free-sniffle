@@ -72,6 +72,7 @@
                 <version>${postgresql.version}</version>
                 <scope>runtime</scope>
             </dependency>
+            <!-- postgresql type ENUM mapping -->
             <dependency>
                 <groupId>io.hypersistence</groupId>
                 <artifactId>hypersistence-utils-hibernate-62</artifactId>
@@ -91,6 +92,8 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- TEST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
