@@ -6,13 +6,23 @@
                 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <preConditions>
-        <dbms type="postgresql"/>
+        <not>
+            <tableExists tableName="employee_role"/>
+        </not>
     </preConditions>
 
-    <changeSet author="ilfat" id="init">
-        <tagDatabase tag="init"/>
+    <changeSet id="1.0-create-employee-role" author="ilfat">
+        <sql>
+            CREATE TYPE "employee_role" AS ENUM (
+            'ANALYST',
+            'DEVELOPER',
+            'TESTER',
+            'PROJECT_MANAGER'
+            );
+        </sql>
+        <rollback>
+            DROP TYPE employee_role
+        </rollback>
     </changeSet>
-
-    <include file="v.1.0/changelog-1.0.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -2,26 +2,16 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd
-                http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.5.xsd">
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
-    <changeSet id="1.0-create-employee-role" author="he">
-        <sql>
-            CREATE TYPE "employee_role" AS ENUM (
-            'ANALYST',
-            'DEVELOPER',
-            'TESTER',
-            'PROJECT_MANAGER'
-            );
-        </sql>
-        <rollback>
-            DROP TYPE employee_role
-        </rollback>
-    </changeSet>
+    <preConditions>
+        <not>
+            <tableExists tableName="teams"/>
+        </not>
+    </preConditions>
 
-    <changeSet id="1.0-create-teams-table" author="he">
+    <changeSet id="1.0-create-teams-table" author="ilfat">
         <createTable tableName="teams">
             <column name="project_id" type="INTEGER">
                 <constraints nullable="false"
@@ -31,7 +21,7 @@
             <column name="employee_id" type="INTEGER">
                 <constraints nullable="false"
                              foreignKeyName="fk_teams_employee_id"
-                             references="projects(id)"/>
+                             references="employees(id)"/>
             </column>
             <column name="role" type="employee_role">
                 <constraints nullable="false"/>
