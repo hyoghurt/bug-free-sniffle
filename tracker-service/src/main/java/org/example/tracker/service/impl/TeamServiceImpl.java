@@ -23,8 +23,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void addEmployeeToProject(TeamReq request) {
         EmployeeEntity employeeEntity = employeeService.getEmployeeEntity(request.getEmployeeId());
-        TeamEmbeddable teamEmbeddable = modelMapper.toTeamEmbeddable(employeeEntity, request.getRole());
-        projectService.addEmployee(request.getProjectId(), teamEmbeddable);
+        projectService.addEmployee(request.getProjectId(), employeeEntity, request.getRole());
     }
 
     @Override
@@ -33,7 +32,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<EmployeeResp> getProjectEmployee(Integer projectId) {
+    public List<EmployeeResp> getProjectEmployees(Integer projectId) {
         return projectService.getAllEmployee(projectId);
     }
 }

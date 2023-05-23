@@ -7,9 +7,12 @@ import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.service.EmployeeService;
-import org.example.tracker.service.exception.EmployeeIsDeletedException;
+import org.example.tracker.service.exception.EmployeeAlreadyDeletedException;
+import org.example.tracker.service.exception.DuplicateUniqueFieldException;
 import org.example.tracker.service.exception.EmployeeNotFoundException;
+import org.example.tracker.service.exception.RequiredFieldException;
 import org.example.tracker.service.mapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +26,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     @Override
-    public void create(EmployeeReq request) {
-        EmployeeEntity entity = modelMapper.toEmployeeEntity(request);
-        employeeRepository.save(entity);
-    }
-
-    @Override
     public EmployeeResp getById(Integer id) {
         EmployeeEntity entity = getEmployeeEntity(id);
         return modelMapper.toEmployeeResp(entity);
@@ -37,20 +34,48 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeResp getByUpn(String upn) {
         EmployeeEntity entity = employeeRepository.findByUpnIgnoreCase(upn);
-        if (entity == null) {
-            throw new EmployeeNotFoundException("not found " + upn);
-        }
+        if (entity == null) throw new EmployeeNotFoundException("not found " + upn);
         return modelMapper.toEmployeeResp(entity);
     }
 
     @Override
-    public void update(Integer id, EmployeeReq request) {
+    public EmployeeResp create(EmployeeReq request) {
         EmployeeEntity entity = modelMapper.toEmployeeEntity(request);
+        save(entity);
+        return modelMapper.toEmployeeResp(entity);
+    }
+
+    @Override
+    public EmployeeResp update(Integer id, EmployeeReq request) {
+        EmployeeEntity entity = getEmployeeEntity(id);
         if (entity.getStatus().equals(EmployeeStatus.DELETED)) {
-            throw new EmployeeIsDeletedException("employee is deleted: " + entity.getId());
+            throw new EmployeeAlreadyDeletedException("employee already deleted: " + entity.getId());
         }
-        entity.setId(id);
-        employeeRepository.save(entity);
+        mergeRequestToEntity(request, entity);
+        save(entity);
+        return modelMapper.toEmployeeResp(entity);
+    }
+
+    private void save(EmployeeEntity entity) {
+        try {
+            employeeRepository.save(entity);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("employees_upn_key")) {
+                throw new DuplicateUniqueFieldException("employee duplicate upn " + entity.getUpn());
+            } else if (e.getMessage().contains("null value in column")) {
+                throw new RequiredFieldException();
+            }
+            throw e;
+        }
+    }
+
+    private void mergeRequestToEntity(EmployeeReq request, EmployeeEntity entity) {
+        entity.setUpn(request.getUpn());
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
+        entity.setMiddleName(request.getMiddleName());
+        entity.setEmail(request.getEmail());
+        entity.setPosition(request.getPosition());
     }
 
     @Override

@@ -1,10 +1,12 @@
 package org.example.tracker.dao.entity;
 
 
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 import java.util.Objects;
 
@@ -20,6 +22,8 @@ public class TeamEmbeddable {
     private EmployeeEntity employee;
 
     @Enumerated(EnumType.STRING)
+    @Type(value = PostgreSQLEnumType.class)
+    @Column(columnDefinition = "employee_role")
     private EmployeeRole role;
 
     @Override

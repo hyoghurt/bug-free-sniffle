@@ -8,8 +8,8 @@ import org.example.tracker.dto.task.TaskUpdateStatusReq;
 import java.util.List;
 
 public interface TaskService {
-    void create(TaskReq request);
-    void update(Integer id, TaskReq request);
+    TaskResp create(TaskReq request);
+    TaskResp update(Integer id, TaskReq request);
     List<TaskResp> findByParam(TaskFilterParam param);
     void updateStatus(Integer id, TaskUpdateStatusReq request);
 }

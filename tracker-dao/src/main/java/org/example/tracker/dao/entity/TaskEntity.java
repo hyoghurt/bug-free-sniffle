@@ -1,10 +1,12 @@
 package org.example.tracker.dao.entity;
 
 
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.tracker.dto.task.TaskStatus;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -21,17 +23,31 @@ public class TaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer projectId;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private ProjectEntity projectId;
+
     private String title;
     private String description;
-    private Integer assigneesId;
+
+    @ManyToOne
+    @JoinColumn(name = "assignees_id")
+    private EmployeeEntity assigneesId;
+
     private Integer authorId;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Type(value = PostgreSQLEnumType.class)
+    @Column(columnDefinition = "task_status")
     private TaskStatus status = TaskStatus.OPEN;
 
     private Integer laborCostsInHours;
+
+    @Builder.Default
     private Instant createdDatetime = Instant.now();
+
     private Instant updateDatetime;
     private Instant deadlineDatetime;
 

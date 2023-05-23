@@ -9,6 +9,7 @@ import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.task.TaskReq;
+import org.example.tracker.dto.task.TaskResp;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.springframework.stereotype.Component;
 
@@ -48,10 +49,8 @@ public class ModelMapper {
 
     public TaskEntity toTaskEntity(TaskReq dto) {
         return TaskEntity.builder()
-                .projectId(dto.getProjectId())
                 .title(dto.getTitle())
                 .description(dto.getDescription())
-                .assigneesId(dto.getAssigneesId())
                 .laborCostsInHours(dto.getLaborCostsInHours())
                 .deadlineDatetime(dto.getDeadlineDatetime())
                 .build();
@@ -65,16 +64,6 @@ public class ModelMapper {
     }
 
     public ProjectResp toProjectResp(ProjectEntity entity) {
-        ProjectResp dto = new ProjectResp();
-        dto.setId(entity.getId());
-        dto.setCode(entity.getCode());
-        dto.setName(entity.getName());
-        dto.setDescription(entity.getDescription());
-        dto.setStatus(entity.getStatus());
-        return dto;
-
-
-/*
         return ProjectResp.builder()
                 .id(entity.getId())
                 .code(entity.getCode())
@@ -82,6 +71,21 @@ public class ModelMapper {
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .build();
-*/
+    }
+
+    public TaskResp toTaskResp(TaskEntity entity) {
+        return TaskResp.builder()
+                .id(entity.getId())
+                .projectId(entity.getProjectId().getId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .status(entity.getStatus())
+                .authorId(entity.getAuthorId())
+                .assigneesId(entity.getAssigneesId().getId())
+                .laborCostsInHours(entity.getLaborCostsInHours())
+                .createdDatetime(entity.getCreatedDatetime())
+                .updateDatetime(entity.getUpdateDatetime())
+                .deadlineDatetime(entity.getDeadlineDatetime())
+                .build();
     }
 }

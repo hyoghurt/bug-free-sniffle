@@ -1,9 +1,11 @@
 package org.example.tracker.dao.entity;
 
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 import java.util.Objects;
 
@@ -19,15 +21,18 @@ public class EmployeeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; //fk
-    private String firstName; //required
-    private String lastName; //required
+    private Integer id;
+    private String firstName;
+    private String lastName;
     private String middleName;
     private String position;
     private String upn;
     private String email;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Type(value = PostgreSQLEnumType.class)
+    @Column(columnDefinition = "employee_status")
     private EmployeeStatus status = EmployeeStatus.ACTIVE;
 
     @Override

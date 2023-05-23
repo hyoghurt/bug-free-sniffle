@@ -10,11 +10,13 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
 
     @Query("""
             select e from EmployeeEntity e
-            where upper(e.firstName) like upper(concat('%', ?1, '%')) 
-            or upper(e.lastName) like upper(concat('%', ?1, '%')) 
-            or upper(e.middleName) like upper(concat('%', ?1, '%')) 
-            or upper(e.upn) like upper(concat('%', ?1, '%')) 
-            or upper(e.email) like upper(concat('%', ?1, '%')) 
+            where (
+            upper(e.firstName) like upper(concat('%', ?1, '%'))
+            or upper(e.lastName) like upper(concat('%', ?1, '%'))
+            or upper(e.middleName) like upper(concat('%', ?1, '%'))
+            or upper(e.upn) like upper(concat('%', ?1, '%'))
+            or upper(e.email) like upper(concat('%', ?1, '%'))
+            )
             and e.status = 'ACTIVE'
             """)
     List<EmployeeEntity> findByNameEmailUpnActiveStatus(String query);

@@ -8,10 +8,16 @@ import java.util.List;
 
 public interface EmployeeService {
     EmployeeResp getById(Integer id);
+
     EmployeeResp getByUpn(String upn);
-    void create(EmployeeReq request);
-    void update(Integer id, EmployeeReq request);
+
+    EmployeeResp create(EmployeeReq request);
+
+    EmployeeResp update(Integer id, EmployeeReq request);
+
     void delete(Integer id);
+
     List<EmployeeResp> find(String query);
+
     EmployeeEntity getEmployeeEntity(Integer id);
 }
