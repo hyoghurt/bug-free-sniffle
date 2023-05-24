@@ -17,7 +17,7 @@ public interface EmployeeService {
 
     void delete(Integer id);
 
-    List<EmployeeResp> find(String query);
+    List<EmployeeResp> getAllByQuery(String query);
 
     EmployeeEntity getEmployeeEntity(Integer id);
 

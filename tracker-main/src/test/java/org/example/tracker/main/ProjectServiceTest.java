@@ -118,7 +118,7 @@ class ProjectServiceTest extends BaseTest {
                 .query(search)
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
+        List<ProjectResp> actual = service.getAllByFilter(param);
         assertEquals(entities.stream()
                 .filter(e -> e.getName().toUpperCase().contains(search.toUpperCase())
                         || e.getCode().toUpperCase().contains(search.toUpperCase()))
@@ -131,7 +131,7 @@ class ProjectServiceTest extends BaseTest {
         ProjectFilterParam param = ProjectFilterParam.builder()
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
+        List<ProjectResp> actual = service.getAllByFilter(param);
         assertEquals(entities.stream()
                 .map(modelMapper::toProjectResp)
                 .collect(Collectors.toList()), actual);
@@ -144,7 +144,7 @@ class ProjectServiceTest extends BaseTest {
                 .statuses(statuses)
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
+        List<ProjectResp> actual = service.getAllByFilter(param);
         assertEquals(entities.stream()
                 .filter(e -> statuses.stream().anyMatch(s -> e.getStatus().equals(s)))
                 .map(modelMapper::toProjectResp)
@@ -160,7 +160,7 @@ class ProjectServiceTest extends BaseTest {
                 .statuses(statuses)
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
+        List<ProjectResp> actual = service.getAllByFilter(param);
         assertEquals(entities.stream()
                 .filter(e ->
                         (e.getName().toUpperCase().contains(search.toUpperCase())

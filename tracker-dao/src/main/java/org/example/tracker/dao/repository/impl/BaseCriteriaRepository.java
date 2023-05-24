@@ -5,9 +5,12 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.example.tracker.dao.entity.ProjectEntity;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class BaseCriteriaRepository {
@@ -55,6 +58,22 @@ public abstract class BaseCriteriaRepository {
                     builder.upper(root.get(field)), "%" + value.toUpperCase() + "%");
             return Optional.of(predicate);
         }
+        return Optional.empty();
+    }
+
+    static <T> Optional<Predicate> findOrLikeIgnoreCasePredicate(List<String> fields, String value,
+                                                                 CriteriaBuilder builder, Root<T> root) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        for (String field : fields) {
+            findLikeIgnoreCasePredicate(field, value, builder, root).ifPresent(predicates::add);
+        }
+
+        if (!predicates.isEmpty()) {
+            Predicate predicate = builder.or(predicates.toArray(new Predicate[0]));
+            return Optional.of(predicate);
+        }
+
         return Optional.empty();
     }
 }

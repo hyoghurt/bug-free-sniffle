@@ -59,8 +59,8 @@ class TaskServiceTest extends BaseTest {
         projectResp = projectService.create(projectReq);
 
         // add employee in team
-        TeamReq teamReq = genTeamReq(projectResp.getId(), employeeResp.getId(), EmployeeRole.ANALYST);
-        teamService.addEmployeeToProject(teamReq);
+        TeamReq teamReq = genTeamReq(employeeResp.getId(), EmployeeRole.ANALYST);
+        teamService.addEmployeeToProject(projectResp.getId(), teamReq);
     }
 
     EmployeeResp createRandomEmployee() {

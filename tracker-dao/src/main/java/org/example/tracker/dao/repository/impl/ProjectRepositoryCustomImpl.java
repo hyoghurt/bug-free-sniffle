@@ -10,12 +10,11 @@ import org.example.tracker.dto.project.ProjectFilterParam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ProjectRepositoryCustomImpl extends BaseCriteriaRepository implements ProjectRepositoryCustom {
 
     @Override
-    public List<ProjectEntity> findByFilter(ProjectFilterParam filter) {
+    public List<ProjectEntity> findAllByFilter(ProjectFilterParam filter) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProjectEntity> criteriaQuery = builder.createQuery(ProjectEntity.class);
         Root<ProjectEntity> root = criteriaQuery.from(ProjectEntity.class);
@@ -32,21 +31,5 @@ public class ProjectRepositoryCustomImpl extends BaseCriteriaRepository implemen
                 .where(builder.and(predicates.toArray(new Predicate[0])));
 
         return entityManager.createQuery(criteriaQuery).getResultList();
-    }
-
-    static Optional<Predicate> findOrLikeIgnoreCasePredicate(List<String> fields, String value, CriteriaBuilder builder,
-                                                   Root<ProjectEntity> root) {
-        List<Predicate> predicates = new ArrayList<>();
-
-        for (String field : fields) {
-            findLikeIgnoreCasePredicate(field, value, builder, root).ifPresent(predicates::add);
-        }
-
-        if (!predicates.isEmpty()) {
-            Predicate predicate = builder.or(predicates.toArray(new Predicate[0]));
-            return Optional.of(predicate);
-        }
-
-        return Optional.empty();
     }
 }

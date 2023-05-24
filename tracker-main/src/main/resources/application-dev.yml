@@ -12,3 +12,6 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:liquibase/changelog-root.xml
+  jackson:
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: true

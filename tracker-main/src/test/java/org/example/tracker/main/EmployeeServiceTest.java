@@ -104,7 +104,7 @@ class EmployeeServiceTest extends BaseTest {
         entities.add(repository.save(genEmployeeEntity("testFirst", "testLast", "testMiddle", "testEmail", "testUpn", "testPosition", EmployeeStatus.DELETED)));
 
         String search = "tEst";
-        List<EmployeeResp> actual = service.find(search);
+        List<EmployeeResp> actual = service.getAllByQuery(search);
         List<EmployeeResp> expected = entities.stream()
                 .filter(e -> (
                                 e.getFirstName().toUpperCase().contains(search.toUpperCase())

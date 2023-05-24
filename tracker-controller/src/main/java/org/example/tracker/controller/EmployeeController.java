@@ -1,53 +1,51 @@
 package org.example.tracker.controller;
 
+import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
+import lombok.RequiredArgsConstructor;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
+import org.example.tracker.service.EmployeeService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequiredArgsConstructor
 public class EmployeeController {
+    private final EmployeeService employeeService;
 
-    /**
-     * Создание профиля сотрудника. При создании сотрудника должна создаваться карточка сотрудника
-     * с перечисленным выше набором атрибутов, также статус сотрудника становится Активный.
-     * @param request объект с данными для создания
-     */
-    public EmployeeResp create(EmployeeReq request) {
-        return null;
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/v1/employees",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public EmployeeResp create(@RequestBody @Valid EmployeeReq request) {
+        return employeeService.create(request);
     }
 
-    /**
-     * Изменение сотрудника. При редактировании сотрудника должны редактировать поля профиля сотрудника.
-     * Удаленного сотрудника изменить нельзя.
-     * @param id идентификатор сотрудника
-     * @param request объект с данными для обновления
-     */
-    public EmployeeResp update(Integer id, EmployeeReq request) {
-        return null;
+    @PutMapping(value = "/v1/employees/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public EmployeeResp update(@PathVariable Integer id, @RequestBody @Valid EmployeeReq request) {
+        return employeeService.update(id, request);
     }
 
-    /**
-     * Удаление сотрудника. При удалении сотрудника, сотрудник переводится в статус Удаленный.
-     * @param id идентификатор профиля
-     */
-    public void delete(Integer id) {
+    @DeleteMapping("/v1/employees/{id}")
+    public void delete(@PathVariable Integer id) {
+        employeeService.delete(id);
     }
 
-    /**
-     * Поиск сотрудников. Поиск осуществляется по текстовому значению,
-     * которое проверяется по атрибутам Фамилия, Имя, Отчество, учетной записи,
-     * адресу электронной почты и только среди активных сотрудников.
-     * @param query поисковый запрос
-     */
-    public List<EmployeeResp> find(String query) {
-        return null;
+    @GetMapping(value = "/v1/employees/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public EmployeeResp getById(@PathVariable Integer id) {
+        return employeeService.getById(id);
     }
 
-    /**
-     * Получение карточки сотрудника либо по идентификатору профиля, либо по УЗ
-     * @param id идентификатор или УЗ
-     */
-    public EmployeeResp get(String id) {
-        return null;
+    @GetMapping(value = "/v1/employees",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EmployeeResp> getAllByQuery(@RequestParam(required = false) String query) {
+        return employeeService.getAllByQuery(query);
     }
 }

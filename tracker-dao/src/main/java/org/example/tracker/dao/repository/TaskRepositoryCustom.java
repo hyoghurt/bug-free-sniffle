@@ -6,5 +6,5 @@ import org.example.tracker.dto.task.TaskFilterParam;
 import java.util.List;
 
 public interface TaskRepositoryCustom {
-    List<TaskEntity> findByFilter(TaskFilterParam filter);
+    List<TaskEntity> findAllByFilter(TaskFilterParam filter);
 }

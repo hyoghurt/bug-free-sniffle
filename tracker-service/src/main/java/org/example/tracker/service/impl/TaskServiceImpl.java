@@ -60,7 +60,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskResp> findByParam(TaskFilterParam param) {
-        return taskRepository.findByFilter(param).stream()
+        return taskRepository.findAllByFilter(param).stream()
                 .map(modelMapper::toTaskResp)
                 .collect(Collectors.toList());
     }

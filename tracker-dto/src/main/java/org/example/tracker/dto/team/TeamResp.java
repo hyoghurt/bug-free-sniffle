@@ -1,19 +1,17 @@
 package org.example.tracker.dto.team;
 
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.tracker.dto.employee.EmployeeResp;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamReq {
-    @NotNull
-    private Integer employeeId;
-    @NotNull
+public class TeamResp {
+    private EmployeeResp employee;
     private EmployeeRole role;
 }

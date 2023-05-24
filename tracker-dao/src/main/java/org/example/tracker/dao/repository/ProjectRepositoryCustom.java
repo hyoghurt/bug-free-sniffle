@@ -6,5 +6,5 @@ import org.example.tracker.dto.project.ProjectFilterParam;
 import java.util.List;
 
 public interface ProjectRepositoryCustom {
-    public List<ProjectEntity> findByFilter(ProjectFilterParam filter);
+    public List<ProjectEntity> findAllByFilter(ProjectFilterParam filter);
 }

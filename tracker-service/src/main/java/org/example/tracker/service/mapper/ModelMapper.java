@@ -11,6 +11,7 @@ import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.task.TaskReq;
 import org.example.tracker.dto.task.TaskResp;
 import org.example.tracker.dto.team.EmployeeRole;
+import org.example.tracker.dto.team.TeamResp;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -86,6 +87,13 @@ public class ModelMapper {
                 .createdDatetime(entity.getCreatedDatetime())
                 .updateDatetime(entity.getUpdateDatetime())
                 .deadlineDatetime(entity.getDeadlineDatetime())
+                .build();
+    }
+
+    public TeamResp toTeamResp(TeamEmbeddable entity) {
+        return TeamResp.builder()
+                .employee(toEmployeeResp(entity.getEmployee()))
+                .role(entity.getRole())
                 .build();
     }
 }

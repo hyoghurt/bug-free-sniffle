@@ -14,7 +14,6 @@ import org.example.tracker.service.exception.RequiredFieldException;
 import org.example.tracker.service.mapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,16 +78,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
     public void delete(Integer id) {
-        EmployeeEntity entity = getEmployeeEntity(id);
-        entity.setStatus(EmployeeStatus.DELETED);
+        int result = employeeRepository.updateStatusById(id);
+        if (result == 0) {
+            throw new EmployeeNotFoundException("not found employee " + id);
+        }
     }
 
     @Override
-    public List<EmployeeResp> find(String query) {
-        List<EmployeeEntity> entities = employeeRepository.findByNameEmailUpnActiveStatus(query);
-        return entities.stream()
+    public List<EmployeeResp> getAllByQuery(String query) {
+        return employeeRepository.findAllByQuery(query).stream()
                 .map(modelMapper::toEmployeeResp)
                 .collect(Collectors.toList());
     }
