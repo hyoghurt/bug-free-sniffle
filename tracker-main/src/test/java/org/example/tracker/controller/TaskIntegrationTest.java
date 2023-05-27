@@ -1,4 +1,4 @@
-package org.example.tracker.main;
+package org.example.tracker.controller;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
@@ -10,6 +10,7 @@ import org.example.tracker.dto.task.TaskStatus;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class TaskIntegrationTest extends BaseIntegrationTest {
-    final String URL = "/v1/tasks";
+    final String URL = "/v1/task";
     final String UPN = "user@com.com";
 
     @Test
@@ -75,6 +76,7 @@ class TaskIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(UPN)
     void create_incorrectDeadline_400() throws Exception {
         ProjectEntity projectEntity = projectRepository.save(genRandomProjectEntity());
 

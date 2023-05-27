@@ -1,4 +1,4 @@
-package org.example.tracker.main;
+package org.example.tracker.controller;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.repository.EmployeeRepository;
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
@@ -19,20 +20,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser
 class EmployeeIntegrationTest extends BaseIntegrationTest {
-    @Autowired
-    EmployeeRepository repository;
-    final String URL = "/v1/employees";
+    final String URL = "/v1/employee";
 
     @AfterEach
     void resetDB() {
-        repository.deleteAll();
+        employeeRepository.deleteAll();
     }
 
     @Test
     void getById_200() throws Exception {
         EmployeeEntity entity = genRandomEmployeeEntity();
-        Integer id = repository.save(entity).getId();
+        Integer id = employeeRepository.save(entity).getId();
 
         mvc.perform(get(URL + "/{id}", id))
                 .andExpect(status().isOk())
@@ -57,13 +57,13 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
 
         EmployeeResp actual = mapper.readValue(content, EmployeeResp.class);
-        EmployeeEntity entity = repository.findById(actual.getId()).orElse(new EmployeeEntity());
+        EmployeeEntity entity = employeeRepository.findById(actual.getId()).orElse(new EmployeeEntity());
         assertEquals(modelMapper.toEmployeeResp(entity), actual);
     }
 
     @Test
     void create_duplicateUpn_400() throws Exception {
-        EmployeeEntity entity = repository.save(genRandomEmployeeEntity());
+        EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
         EmployeeReq request = genEmployeeReq(entity.getUpn(), "first", "last");
 
         mvc.perform(post(URL)
@@ -84,7 +84,7 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void update_200() throws Exception {
-        EmployeeEntity entity = repository.save(genRandomEmployeeEntity());
+        EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
         EmployeeReq request = genRandomEmployeeReq();
 
         mvc.perform(put(URL + "/{id}", entity.getId())
@@ -92,7 +92,7 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
                         .content(asJsonString(request)))
                 .andExpect(status().isOk());
 
-        EmployeeEntity updateEntity = repository.findById(entity.getId()).orElse(new EmployeeEntity());
+        EmployeeEntity updateEntity = employeeRepository.findById(entity.getId()).orElse(new EmployeeEntity());
         assertEquals(request.getUpn(), updateEntity.getUpn());
         assertEquals(request.getFirstName(), updateEntity.getFirstName());
         assertEquals(request.getLastName(), updateEntity.getLastName());
@@ -110,8 +110,8 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void update_duplicateUpn_400() throws Exception {
-        EmployeeEntity entity = repository.save(genRandomEmployeeEntity());
-        EmployeeEntity entity2 = repository.save(genRandomEmployeeEntity());
+        EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
+        EmployeeEntity entity2 = employeeRepository.save(genRandomEmployeeEntity());
         EmployeeReq request = genEmployeeReq(entity.getUpn(), "first", "last");
 
         mvc.perform(put(URL + "/{id}", entity2.getId())
@@ -122,7 +122,7 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void update_alreadyDeleted_400() throws Exception {
-        EmployeeEntity entity = repository.save(genRandomEmployeeEntity(EmployeeStatus.DELETED));
+        EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity(EmployeeStatus.DELETED));
         EmployeeReq request = genRandomEmployeeReq();
 
         mvc.perform(put(URL + "/{id}", entity.getId())
@@ -133,12 +133,12 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void delete_200() throws Exception {
-        EmployeeEntity entity = repository.save(genRandomEmployeeEntity());
+        EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
 
         mvc.perform(delete(URL + "/{id}", entity.getId()))
                 .andExpect(status().isOk());
 
-        EmployeeEntity deleteEntity = repository.findById(entity.getId()).orElse(new EmployeeEntity());
+        EmployeeEntity deleteEntity = employeeRepository.findById(entity.getId()).orElse(new EmployeeEntity());
         assertEquals(EmployeeStatus.DELETED, deleteEntity.getStatus());
     }
 
@@ -153,7 +153,7 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
         List<EmployeeEntity> entities = initEntity();
         List<EmployeeResp> expected = myFilter(entities, null);
 
-        mvc.perform(get(URL))
+        mvc.perform(get(URL + "s"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content()
                         .json(asJsonString(expected)));
@@ -165,7 +165,7 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
         List<EmployeeEntity> entities = initEntity();
         List<EmployeeResp> expected = myFilter(entities, SEARCH);
 
-        mvc.perform(get(URL).param("query", SEARCH))
+        mvc.perform(get(URL + "s").param("query", SEARCH))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content()
                         .json(asJsonString(expected)));
@@ -189,13 +189,13 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
     List<EmployeeEntity> initEntity() {
         List<EmployeeEntity> entities = new ArrayList<>();
         System.out.println("CREATE Employee ENTITIES--------------------------");
-        entities.add(repository.save(genEmployeeEntity("testName", "last", null, null, null, null, EmployeeStatus.ACTIVE)));
-        entities.add(repository.save(genEmployeeEntity("name", "lastTest", null, null, null, null, EmployeeStatus.ACTIVE)));
-        entities.add(repository.save(genEmployeeEntity("name", "last", "midtestname", null, null, null, EmployeeStatus.ACTIVE)));
-        entities.add(repository.save(genEmployeeEntity("name", "last", null, "testmail", null, null, EmployeeStatus.ACTIVE)));
-        entities.add(repository.save(genEmployeeEntity("name", "last", null, null, "testupn", null, EmployeeStatus.ACTIVE)));
-        entities.add(repository.save(genEmployeeEntity("name", "last", null, null, null, "postest", EmployeeStatus.ACTIVE)));
-        entities.add(repository.save(genEmployeeEntity("testFirst", "testLast", "testMiddle", "testEmail", "testUpn", "testPosition", EmployeeStatus.DELETED)));
+        entities.add(employeeRepository.save(genEmployeeEntity("testName", "last", null, null, null, null, EmployeeStatus.ACTIVE)));
+        entities.add(employeeRepository.save(genEmployeeEntity("name", "lastTest", null, null, null, null, EmployeeStatus.ACTIVE)));
+        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", "midtestname", null, null, null, EmployeeStatus.ACTIVE)));
+        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", null, "testmail", null, null, EmployeeStatus.ACTIVE)));
+        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", null, null, "testupn", null, EmployeeStatus.ACTIVE)));
+        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", null, null, null, "postest", EmployeeStatus.ACTIVE)));
+        entities.add(employeeRepository.save(genEmployeeEntity("testFirst", "testLast", "testMiddle", "testEmail", "testUpn", "testPosition", EmployeeStatus.DELETED)));
         return entities;
     }
 }

@@ -1,4 +1,4 @@
-package org.example.tracker.main;
+package org.example.tracker.service;
 
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
@@ -7,9 +7,6 @@ import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamReq;
 import org.example.tracker.dto.team.TeamResp;
-import org.example.tracker.service.EmployeeService;
-import org.example.tracker.service.ProjectService;
-import org.example.tracker.service.TeamService;
 import org.example.tracker.service.exception.EmployeeAlreadyExistsInTeamException;
 import org.example.tracker.service.exception.EmployeeNotFoundException;
 import org.example.tracker.service.exception.RoleAlreadyExistsInTeamException;

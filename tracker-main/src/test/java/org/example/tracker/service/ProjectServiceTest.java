@@ -1,9 +1,8 @@
-package org.example.tracker.main;
+package org.example.tracker.service;
 
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dto.project.*;
-import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.exception.DuplicateUniqueFieldException;
 import org.example.tracker.service.exception.ProjectStatusIncorrectFlowUpdateException;
 import org.junit.jupiter.api.BeforeEach;

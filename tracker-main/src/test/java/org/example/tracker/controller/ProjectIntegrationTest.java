@@ -1,5 +1,6 @@
-package org.example.tracker.main;
+package org.example.tracker.controller;
 
+import org.example.tracker.controller.BaseIntegrationTest;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dto.project.*;

@@ -1,4 +1,4 @@
-package org.example.tracker.main;
+package org.example.tracker;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
@@ -15,10 +15,10 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.UUID;
 
-class ModelGenerate {
+public class ModelGenerate {
 
     // TASK
-    TaskReq genRandomTaskReq(Integer projectId, Integer assigneesId) {
+    public TaskReq genRandomTaskReq(Integer projectId, Integer assigneesId) {
         return TaskReq.builder()
                 .title(UUID.randomUUID().toString())
                 .projectId(projectId)
@@ -30,7 +30,7 @@ class ModelGenerate {
 
 
     // TEAM
-    TeamReq genTeamReq(Integer employeeId, EmployeeRole role) {
+    public TeamReq genTeamReq(Integer employeeId, EmployeeRole role) {
         return TeamReq.builder()
                 .employeeId(employeeId)
                 .role(role)
@@ -39,14 +39,14 @@ class ModelGenerate {
 
 
     // PROJECT
-    ProjectReq genProjectReq(String code, String name) {
+    public ProjectReq genProjectReq(String code, String name) {
         return ProjectReq.builder()
                 .code(code)
                 .name(name)
                 .build();
     }
 
-    ProjectEntity genProjectEntity(String code, String name, String desc, String status) {
+    public ProjectEntity genProjectEntity(String code, String name, String desc, String status) {
         return ProjectEntity.builder()
                 .code(code)
                 .name(name)
@@ -55,21 +55,21 @@ class ModelGenerate {
                 .build();
     }
 
-    ProjectReq genRandomProjectReq() {
+    public ProjectReq genRandomProjectReq() {
         return ProjectReq.builder()
                 .code(UUID.randomUUID().toString())
                 .name(UUID.randomUUID().toString())
                 .build();
     }
 
-    ProjectEntity genRandomProjectEntity() {
+    public ProjectEntity genRandomProjectEntity() {
         return ProjectEntity.builder()
                 .code(UUID.randomUUID().toString())
                 .name(UUID.randomUUID().toString())
                 .build();
     }
 
-    ProjectEntity genRandomProjectEntity(ProjectStatus status) {
+    public ProjectEntity genRandomProjectEntity(ProjectStatus status) {
         return ProjectEntity.builder()
                 .code(UUID.randomUUID().toString())
                 .name(UUID.randomUUID().toString())
@@ -79,7 +79,7 @@ class ModelGenerate {
 
 
     // EMPLOYEE
-    EmployeeReq genEmployeeReq(String upn, String first, String last) {
+    public EmployeeReq genEmployeeReq(String upn, String first, String last) {
         return EmployeeReq.builder()
                 .upn(upn)
                 .firstName(first)
@@ -87,7 +87,7 @@ class ModelGenerate {
                 .build();
     }
 
-    EmployeeEntity genEmployeeEntity(String firstName, String lastName, String middleName,
+    public EmployeeEntity genEmployeeEntity(String firstName, String lastName, String middleName,
                                      String email, String upn, String position, EmployeeStatus status) {
         return EmployeeEntity.builder()
                 .upn(upn)
@@ -100,7 +100,7 @@ class ModelGenerate {
                 .build();
     }
 
-    EmployeeEntity genRandomEmployeeEntity() {
+    public EmployeeEntity genRandomEmployeeEntity() {
         return EmployeeEntity.builder()
                 .upn(UUID.randomUUID().toString())
                 .firstName(UUID.randomUUID().toString())
@@ -108,13 +108,13 @@ class ModelGenerate {
                 .build();
     }
 
-    EmployeeEntity genRandomEmployeeEntity(EmployeeStatus status) {
+    public EmployeeEntity genRandomEmployeeEntity(EmployeeStatus status) {
         EmployeeEntity entity = genRandomEmployeeEntity();
         entity.setStatus(status);
         return entity;
     }
 
-    EmployeeReq genRandomEmployeeReq() {
+    public EmployeeReq genRandomEmployeeReq() {
         return EmployeeReq.builder()
                 .upn(UUID.randomUUID().toString())
                 .firstName(UUID.randomUUID().toString())
