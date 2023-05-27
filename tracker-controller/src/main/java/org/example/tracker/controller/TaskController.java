@@ -28,8 +28,8 @@ public class TaskController {
     private final TaskService taskService;
 
     @Operation(summary = "создание",
-            description = "Создание задачи. При создании задачи должны заполняться все " +
-                    "обязательные поля. Также задача автоматически создается в статусе Новая.",
+            description = "Создание задачи. Задача автоматически создается в статусе OPEN. " +
+                    "Автором задачи становиться тот, кто создал задачу.",
             responses = {
                     @ApiResponse(responseCode = "201"),
                     @ApiResponse(responseCode = "404",
@@ -67,7 +67,6 @@ public class TaskController {
 
     @Operation(summary = "изменение статуса",
             description = "Изменение статуса задачи. " +
-                    "При этом действии задача переводится в новый статус, который поступил на вход. " +
                     "Переход по статусам возможен согласно последовательности.",
             responses = {
                     @ApiResponse(responseCode = "200"),

@@ -48,7 +48,7 @@ public class TeamController {
 
     //TODO test incorrect type /teams/sdfdf/123
     @Operation(summary = "удаление",
-            description = "Удалить сотрудника из команды проекта",
+            description = "Удалить сотрудника из команды проекта.",
             responses = {
                     @ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "404",

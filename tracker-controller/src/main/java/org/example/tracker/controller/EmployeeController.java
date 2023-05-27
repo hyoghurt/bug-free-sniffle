@@ -28,7 +28,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @Operation(summary = "создание",
-            description = "Создать профиль сотрудника с набором атрибутов",
+            description = "Создать профиль сотрудника с набором атрибутов. Статус сотрудника становится Активный.",
             responses = {
                     @ApiResponse(responseCode = "201"),
                     @ApiResponse(responseCode = "400",

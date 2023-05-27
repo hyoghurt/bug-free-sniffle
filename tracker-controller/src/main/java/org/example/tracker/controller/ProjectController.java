@@ -27,7 +27,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @Operation(summary = "создание",
-            description = "Создать проект. Код проекта должен быть уникален. Проект создается в статусе DRAFT.",
+            description = "Создать проект. Проект создается в статусе DRAFT.",
             responses = {
                     @ApiResponse(responseCode = "201"),
                     @ApiResponse(responseCode = "400",
@@ -43,7 +43,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "изменение",
-            description = "Изменить проект",
+            description = "Изменить проект.",
             responses = {
                     @ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "404",
@@ -63,7 +63,8 @@ public class ProjectController {
 
     @Operation(summary = "поиск",
             description = "Поиск проектов. Поиск осуществляеться по текстовому значению " +
-                    "(по полям Наименование и Код проекта) и с применением фильтров по Статусу проекта.",
+                    "(по полям Наименование и Код проекта) и с применением фильтров по Статусу проекта. " +
+                    "Если параметры не переданы, то вернуться все проекты.",
             responses = {
                     @ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "400",
@@ -80,7 +81,8 @@ public class ProjectController {
     }
 
     @Operation(summary = "изменение статуса",
-            description = "Перевести проект в другой статус.",
+            description = "Перевести проект в другой статус. Можно перевести в другой статус проект, " +
+                    "согласно последовательности изменения статуса.",
             responses = {
                     @ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "404",

@@ -17,11 +17,13 @@ import java.time.Instant;
 @AllArgsConstructor
 public class TaskResp extends TaskReq {
 
-    @Schema(description = "уникальный идентификатор задачи", example = "32")
+    @Schema(description = "уникальный идентификатор задачи",
+            example = "32")
     private int id;
 
     @Schema(description = "Уникальный идентификатор автора задачи. " +
-            "Автором задачи может являться только участник проекта.", example = "3")
+            "Автором задачи может являться только участник проекта.",
+            example = "3")
     private int authorId;
 
     private TaskStatus status;
@@ -31,6 +33,7 @@ public class TaskResp extends TaskReq {
     private Instant createdDatetime;
 
     @Schema(description = "Дата последнего изменения задачи - дата последнего редактирования задачи " +
-            "(но не изменение статуса задачи).", example = "2020-04-28T00:00:00.000Z")
+            "(но не изменение статуса задачи).",
+            example = "2020-04-28T00:00:00.000Z")
     private Instant updateDatetime;
 }
