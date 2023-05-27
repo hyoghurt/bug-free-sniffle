@@ -6,13 +6,30 @@ import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectStatus;
+import org.example.tracker.dto.task.TaskReq;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamReq;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.UUID;
 
 class ModelGenerate {
 
+    // TASK
+    TaskReq genRandomTaskReq(Integer projectId, Integer assigneesId) {
+        return TaskReq.builder()
+                .title(UUID.randomUUID().toString())
+                .projectId(projectId)
+                .assigneesId(assigneesId)
+                .laborCostsInHours(1)
+                .deadlineDatetime(Instant.now().plus(6, ChronoUnit.HOURS))
+                .build();
+    }
+
+
+    // TEAM
     TeamReq genTeamReq(Integer employeeId, EmployeeRole role) {
         return TeamReq.builder()
                 .employeeId(employeeId)

@@ -22,4 +22,6 @@ public interface EmployeeService {
     EmployeeEntity getEmployeeEntity(Integer id);
 
     boolean isDeleted(EmployeeEntity entity);
+
+    EmployeeEntity getEmployeeEntityByUpn(String upn);
 }

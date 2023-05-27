@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Integer>, EmployeeRepositoryCustom {
     @Transactional
     @Modifying
@@ -13,4 +15,6 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
     int updateStatusById(Integer id);
 
     EmployeeEntity findByUpnIgnoreCase(String upn);
+
+    Optional<EmployeeEntity> findByUpn(String upn);
 }

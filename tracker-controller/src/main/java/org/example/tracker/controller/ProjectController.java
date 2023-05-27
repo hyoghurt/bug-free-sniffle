@@ -1,7 +1,15 @@
 package org.example.tracker.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.tracker.dto.error.ErrorResp;
 import org.example.tracker.dto.project.*;
 import org.example.tracker.service.ProjectService;
 import org.springframework.http.HttpStatus;
@@ -12,34 +20,80 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "project", description = "управление проектами")
+@SecurityRequirement(name = "basicScheme")
+@ApiResponse(responseCode = "401", description = "unauthorized", content = @Content)
 public class ProjectController {
     private final ProjectService projectService;
 
+    @Operation(summary = "создание",
+            description = "Создать проект. Код проекта должен быть уникален. Проект создается в статусе DRAFT.",
+            responses = {
+                    @ApiResponse(responseCode = "201"),
+                    @ApiResponse(responseCode = "400",
+                            content = @Content(schema = @Schema(implementation = ErrorResp.class)))
+            })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/v1/projects",
+    @PostMapping(value = "/v1/project",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ProjectResp create(@RequestBody @Valid ProjectReq request) {
+
         return projectService.create(request);
     }
 
-    @PutMapping(value = "/v1/projects/{id}",
+    @Operation(summary = "изменение",
+            description = "Изменить проект",
+            responses = {
+                    @ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = ErrorResp.class))),
+                    @ApiResponse(responseCode = "400",
+                            content = @Content(schema = @Schema(implementation = ErrorResp.class)))
+            })
+    @PutMapping(value = "/v1/project/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProjectResp update(@PathVariable Integer id, @RequestBody @Valid ProjectReq request) {
+    public ProjectResp update(@Parameter(description = "уникальный идентификатор проекта")
+                              @PathVariable Integer id,
+                              @RequestBody @Valid ProjectReq request) {
+
         return projectService.update(id, request);
     }
 
-    @GetMapping (value = "/v1/projects",
+    @Operation(summary = "поиск",
+            description = "Поиск проектов. Поиск осуществляеться по текстовому значению " +
+                    "(по полям Наименование и Код проекта) и с применением фильтров по Статусу проекта.",
+            responses = {
+                    @ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "400",
+                            content = @Content(schema = @Schema(implementation = ErrorResp.class)))
+            })
+    @GetMapping(value = "/v1/projects",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProjectResp> getAllByFilter(@RequestParam(required = false) String query,
+    public List<ProjectResp> getAllByFilter(@Parameter(description = "текстовое значение для поиска")
+                                            @RequestParam(required = false) String query,
+                                            @Parameter(description = "список статусов для фильтра")
                                             @RequestParam(required = false) List<ProjectStatus> statuses) {
+
         return projectService.getAllByFilter(new ProjectFilterParam(query, statuses));
     }
 
-    @PutMapping(value = "/v1/projects/{id}/status",
+    @Operation(summary = "изменение статуса",
+            description = "Перевести проект в другой статус.",
+            responses = {
+                    @ApiResponse(responseCode = "200"),
+                    @ApiResponse(responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = ErrorResp.class))),
+                    @ApiResponse(responseCode = "400",
+                            content = @Content(schema = @Schema(implementation = ErrorResp.class)))
+            })
+    @PutMapping(value = "/v1/project/{id}/status",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateStatus(@PathVariable Integer id, @RequestBody @Valid ProjectUpdateStatusReq request) {
+    public void updateStatus(@Parameter(description = "уникальный идентификатор проекта")
+                             @PathVariable Integer id,
+                             @RequestBody @Valid ProjectUpdateStatusReq request) {
+
         projectService.updateStatus(id, request);
     }
 }

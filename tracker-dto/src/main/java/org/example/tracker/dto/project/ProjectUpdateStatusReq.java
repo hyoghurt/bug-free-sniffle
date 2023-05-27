@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectUpdateStatusReq {
+
     @NotNull(message = "status required")
     private ProjectStatus status;
 }

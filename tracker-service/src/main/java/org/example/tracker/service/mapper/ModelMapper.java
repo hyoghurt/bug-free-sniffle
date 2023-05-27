@@ -75,19 +75,20 @@ public class ModelMapper {
     }
 
     public TaskResp toTaskResp(TaskEntity entity) {
-        return TaskResp.builder()
+        TaskResp dto = TaskResp.builder()
                 .id(entity.getId())
                 .projectId(entity.getProject().getId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .authorId(entity.getAuthorId())
-                .assigneesId(entity.getAssignees().getId())
                 .laborCostsInHours(entity.getLaborCostsInHours())
                 .createdDatetime(entity.getCreatedDatetime())
                 .updateDatetime(entity.getUpdateDatetime())
                 .deadlineDatetime(entity.getDeadlineDatetime())
                 .build();
+        if (entity.getAssignees() != null) dto.setAssigneesId(entity.getAssignees().getId());
+        return dto;
     }
 
     public TeamResp toTeamResp(TeamEmbeddable entity) {
