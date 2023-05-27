@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "team", description = "управление командами")
 @SecurityRequirement(name = "basicScheme")
-@ApiResponse(responseCode = "401", description = "unauthorized", content = @Content)
+@ApiResponse(responseCode = "401", content = @Content)
 public class TeamController {
     private final TeamService teamService;
 
@@ -37,7 +37,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @PostMapping(value = "/v1/teams/{projectId}",
+    @PostMapping(value = "/v1/team/{projectId}",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public void addEmployee(@Parameter(description = "уникальный идентификатор проекта")
                             @PathVariable Integer projectId,
@@ -46,7 +46,7 @@ public class TeamController {
         teamService.addEmployeeToProject(projectId, request);
     }
 
-    //TODO test incorrect type /teams/sdfdf/123
+    //TODO test incorrect type /team/sdfdf/123
     @Operation(summary = "удаление",
             description = "Удалить сотрудника из команды проекта.",
             responses = {
@@ -56,7 +56,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @DeleteMapping(value = "/v1/teams/{projectId}/{employeeId}")
+    @DeleteMapping(value = "/v1/team/{projectId}/{employeeId}")
     public void removeEmployee(@Parameter(description = "уникальный идентификатор проекта")
                                @PathVariable Integer projectId,
                                @Parameter(description = "уникальный идентификатор сотрудника")
@@ -75,7 +75,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @GetMapping(value = "/v1/teams/{projectId}",
+    @GetMapping(value = "/v1/team/{projectId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TeamResp> getAllEmployee(@Parameter(description = "уникальный идентификатор проекта")
                                          @PathVariable Integer projectId) {

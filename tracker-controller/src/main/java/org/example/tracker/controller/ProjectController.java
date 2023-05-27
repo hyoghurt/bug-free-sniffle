@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "project", description = "управление проектами")
 @SecurityRequirement(name = "basicScheme")
-@ApiResponse(responseCode = "401", description = "unauthorized", content = @Content)
+@ApiResponse(responseCode = "401", content = @Content)
 public class ProjectController {
     private final ProjectService projectService;
 

@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "employee", description = "управление сотрудниками")
 @SecurityRequirement(name = "basicScheme")
-@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+@ApiResponse(responseCode = "401", content = @Content)
 public class EmployeeController {
     private final EmployeeService employeeService;
 
