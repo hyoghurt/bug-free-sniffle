@@ -17,7 +17,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Embeddable
 public class TeamEmbeddable {
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "employee_id")
     private EmployeeEntity employee;
 
