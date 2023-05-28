@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.example.tracker.dao.repository.specification.ProfileSpecs.*;
+import static org.springframework.data.jpa.domain.Specification.where;
+
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
@@ -60,7 +63,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectResp> findByParam(ProjectFilterParam param) {
-        List<ProjectEntity> entities = projectRepository.findByFilter(param);
+        List<ProjectEntity> entities = projectRepository.findAll(
+                where((byCodeLikeIgnoreCase(param.getQuery())
+                        .or(byNameLikeIgnoreCase(param.getQuery())))
+                        .and(byStatusIn(param.getStatuses())))
+        );
+
         return entities.stream()
                 .map(modelMapper::toProjectResp)
                 .collect(Collectors.toList());

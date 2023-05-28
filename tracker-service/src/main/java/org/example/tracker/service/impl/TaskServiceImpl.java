@@ -24,6 +24,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.example.tracker.dao.repository.specification.TaskSpecs.*;
+
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
@@ -60,7 +62,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskResp> findByParam(TaskFilterParam param) {
-        return taskRepository.findByFilter(param).stream()
+        List<TaskEntity> entities = taskRepository.findAll(
+                orderByCreatedDatetime(
+                        byTitleLikeIgnoreCase(param.getQuery())
+                                .and(byAssigneesIdEquals(param.getAssigneesId()))
+                                .and(byAuthorIdEquals(param.getAuthorId()))
+                                .and(byStatusIn(param.getStatuses()))
+                                .and(createdBetween(param.getMinCreatedDatetime(), param.getMaxCreatedDatetime()))
+                                .and(deadlineBetween(param.getMinDeadlineDatetime(), param.getMaxDeadlineDatetime()))
+                ));
+
+        return entities.stream()
                 .map(modelMapper::toTaskResp)
                 .collect(Collectors.toList());
     }

@@ -119,12 +119,9 @@ class ProjectServiceTest extends BaseTest {
                 .build();
 
         List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(entities.stream()
-                .filter(e -> e.getName().toUpperCase().contains(search.toUpperCase())
-                        || e.getCode().toUpperCase().contains(search.toUpperCase()))
-                .map(modelMapper::toProjectResp)
-                .collect(Collectors.toList()), actual);
+        assertEquals(myFilter(entities, param), actual);
     }
+
 
     @Test
     void filterNull() {
@@ -132,9 +129,7 @@ class ProjectServiceTest extends BaseTest {
                 .build();
 
         List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(entities.stream()
-                .map(modelMapper::toProjectResp)
-                .collect(Collectors.toList()), actual);
+        assertEquals(myFilter(entities, param), actual);
     }
 
     @Test
@@ -145,10 +140,7 @@ class ProjectServiceTest extends BaseTest {
                 .build();
 
         List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(entities.stream()
-                .filter(e -> statuses.stream().anyMatch(s -> e.getStatus().equals(s)))
-                .map(modelMapper::toProjectResp)
-                .collect(Collectors.toList()), actual);
+        assertEquals(myFilter(entities, param), actual);
     }
 
     @Test
@@ -161,14 +153,20 @@ class ProjectServiceTest extends BaseTest {
                 .build();
 
         List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(entities.stream()
-                .filter(e ->
-                        (e.getName().toUpperCase().contains(search.toUpperCase())
-                                || e.getCode().toUpperCase().contains(search.toUpperCase()))
-                                && statuses.stream().anyMatch(s -> e.getStatus().equals(s))
+        assertEquals(myFilter(entities, param), actual);
+    }
+
+    List<ProjectResp> myFilter(List<ProjectEntity> entities, ProjectFilterParam filter) {
+        return entities.stream().filter(e ->
+                (
+                        filter.getQuery() == null
+                                || e.getCode().toUpperCase().contains(filter.getQuery().toUpperCase())
+                                || e.getName().toUpperCase().contains(filter.getQuery().toUpperCase())
+                ) && (
+                        filter.getStatuses() == null
+                                || filter.getStatuses().stream().anyMatch(s -> e.getStatus().equals(s))
                 )
-                .map(modelMapper::toProjectResp)
-                .collect(Collectors.toList()), actual);
+        ).map(modelMapper::toProjectResp).toList();
     }
 
     ProjectResp createRandomProject() {
