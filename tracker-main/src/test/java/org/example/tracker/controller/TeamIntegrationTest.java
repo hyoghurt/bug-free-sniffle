@@ -1,41 +1,42 @@
 package org.example.tracker.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.example.tracker.controller.BaseIntegrationTest;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TeamEmbeddable;
-import org.example.tracker.dao.repository.EmployeeRepository;
-import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamReq;
 import org.example.tracker.dto.team.TeamResp;
 import org.example.tracker.service.ProjectService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser
 class TeamIntegrationTest extends BaseIntegrationTest {
-    @Autowired
-    ProjectRepository projectRepository;
+    final String URL = "/v1/team";
+
     @Autowired
     ProjectService projectService;
-    @Autowired
-    EmployeeRepository employeeRepository;
-    final String URL = "/v1/teams";
 
-    @AfterEach
-    void resetDB() {
-        projectRepository.deleteAll();
-        employeeRepository.deleteAll();
+
+
+    // ADD __________________________________________________
+    ResultActions addResultActions(final Integer id, final Object body) throws Exception {
+        return mvc.perform(post(URL + "/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(body)));
     }
 
     @Test
@@ -47,16 +48,14 @@ class TeamIntegrationTest extends BaseIntegrationTest {
 
         TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.ANALYST);
 
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isOk());
 
         List<TeamResp> actual = projectService.getAllTeamEmployee(projectEntity.getId());
 
         assertEquals(1, actual.size());
-        assertEquals(actual.get(0).getEmployee(), modelMapper.toEmployeeResp(employeeEntity));
-        assertEquals(actual.get(0).getRole(), request.getRole());
+        assertEquals(modelMapper.toEmployeeResp(employeeEntity), actual.get(0).getEmployee());
+        assertEquals(request.getRole(), actual.get(0).getRole());
     }
 
     @Test
@@ -70,57 +69,44 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         request.put("employeeId", employeeEntity.getId());
         request.put("role", "analYST");
 
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isOk());
 
         List<TeamResp> actual = projectService.getAllTeamEmployee(projectEntity.getId());
 
         assertEquals(1, actual.size());
-        assertEquals(actual.get(0).getEmployee(), modelMapper.toEmployeeResp(employeeEntity));
-        assertEquals(actual.get(0).getRole(), EmployeeRole.ANALYST);
+        assertEquals(modelMapper.toEmployeeResp(employeeEntity), actual.get(0).getEmployee());
+        assertEquals(EmployeeRole.ANALYST, actual.get(0).getRole());
     }
 
     @Test
-    void add_duplicateRole_400() throws Exception {
+    void add_duplicateRoleInTeam_400() throws Exception {
         EmployeeEntity employeeEntity = genRandomEmployeeEntity();
         EmployeeEntity employeeEntity2 = genRandomEmployeeEntity();
         ProjectEntity projectEntity = genRandomProjectEntity();
+        projectEntity.setTeams(Set.of(new TeamEmbeddable(employeeEntity, EmployeeRole.ANALYST)));
         employeeRepository.save(employeeEntity);
         employeeRepository.save(employeeEntity2);
         projectRepository.save(projectEntity);
 
-        TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.ANALYST);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
-                .andExpect(status().isOk());
+        TeamReq request = genTeamReq(employeeEntity2.getId(), EmployeeRole.ANALYST);
 
-        request = genTeamReq(employeeEntity2.getId(), EmployeeRole.ANALYST);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        addResultActions(projectEntity.getId(), request)
+                .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void add_duplicateEmployee_400() throws Exception {
+    void add_duplicateEmployeeInTeam_400() throws Exception {
         EmployeeEntity employeeEntity = genRandomEmployeeEntity();
         ProjectEntity projectEntity = genRandomProjectEntity();
+        projectEntity.setTeams(Set.of(new TeamEmbeddable(employeeEntity, EmployeeRole.ANALYST)));
         employeeRepository.save(employeeEntity);
         projectRepository.save(projectEntity);
 
-        TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.ANALYST);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
-                .andExpect(status().isOk());
+        TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.PROJECT_MANAGER);
 
-        request = genTeamReq(employeeEntity.getId(), EmployeeRole.PROJECT_MANAGER);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isBadRequest());
     }
 
@@ -132,9 +118,8 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         projectRepository.save(projectEntity);
 
         TeamReq request = genTeamReq(employeeEntity.getId(), null);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+
+        addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isBadRequest());
     }
 
@@ -146,9 +131,8 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         projectRepository.save(projectEntity);
 
         TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.TESTER);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+
+        addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isBadRequest());
     }
 
@@ -163,9 +147,7 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         request.put("employeeId", employeeEntity.getId());
         request.put("role", "man");
 
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isBadRequest());
     }
 
@@ -175,9 +157,8 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         projectRepository.save(projectEntity);
 
         TeamReq request = genTeamReq(1, EmployeeRole.TESTER);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+
+        addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isNotFound());
     }
 
@@ -187,26 +168,27 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         employeeRepository.save(employeeEntity);
 
         TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.TESTER);
-        mvc.perform(post(URL + "/{id}", 1)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+
+        addResultActions(1, request)
                 .andExpect(status().isNotFound());
+    }
+
+
+
+    // DELETED __________________________________________________
+    ResultActions deleteResultActions(final Integer id, final Integer employeeId) throws Exception {
+        return mvc.perform(delete(URL + "/{id}/{emId}", id, employeeId));
     }
 
     @Test
     void delete_200() throws Exception {
         EmployeeEntity employeeEntity = genRandomEmployeeEntity();
         ProjectEntity projectEntity = genRandomProjectEntity();
+        projectEntity.setTeams(Set.of(new TeamEmbeddable(employeeEntity, EmployeeRole.ANALYST)));
         employeeRepository.save(employeeEntity);
         projectRepository.save(projectEntity);
 
-        TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.TESTER);
-        mvc.perform(post(URL + "/{id}", projectEntity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
-                .andExpect(status().isOk());
-
-        mvc.perform(delete(URL + "/{id}/{emId}", projectEntity.getId(), employeeEntity.getId()))
+        deleteResultActions(projectEntity.getId(), employeeEntity.getId())
                 .andExpect(status().isOk());
 
         List<TeamResp> actual = projectService.getAllTeamEmployee(projectEntity.getId());
@@ -218,7 +200,7 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         EmployeeEntity employeeEntity = genRandomEmployeeEntity();
         employeeRepository.save(employeeEntity);
 
-        mvc.perform(delete(URL + "/{id}/{emId}", 1, employeeEntity.getId()))
+        deleteResultActions(1, employeeEntity.getId())
                 .andExpect(status().isNotFound());
     }
 
@@ -227,7 +209,7 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         ProjectEntity projectEntity = genRandomProjectEntity();
         projectRepository.save(projectEntity);
 
-        mvc.perform(delete(URL + "/{id}/{emId}", projectEntity.getId(), 1))
+        deleteResultActions(projectEntity.getId(), 1)
                 .andExpect(status().isNotFound());
     }
 
@@ -238,8 +220,15 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         employeeRepository.save(employeeEntity);
         projectRepository.save(projectEntity);
 
-        mvc.perform(delete(URL + "/{id}/{emId}", projectEntity.getId(), employeeEntity.getId()))
+        deleteResultActions(projectEntity.getId(), employeeEntity.getId())
                 .andExpect(status().isNotFound());
+    }
+
+
+
+    // GET ALL __________________________________________________
+    ResultActions getAllResultActions(final Integer id) throws Exception {
+        return mvc.perform(get(URL + "/{id}", id));
     }
 
     @Test
@@ -263,17 +252,20 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         projectEntity.setTeams(Set.of(new TeamEmbeddable(employeeEntity3, EmployeeRole.PROJECT_MANAGER)));
         projectRepository.save(projectEntity2);
 
-        String content = mvc.perform(get(URL + "/{id}", projectEntity.getId()))
+        String content = getAllResultActions(projectEntity.getId())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<TeamResp> actual = mapper.readValue(content, new TypeReference<>() {});
+        List<TeamResp> actual = mapper.readValue(content, new TypeReference<>() {
+        });
         assertEquals(set.size(), actual.size());
+        assertTrue(actual.stream()
+                .noneMatch(t -> employeeEntity3.getId().equals(t.getEmployee().getId())));
     }
 
     @Test
     void getAll_notFoundProject_404() throws Exception {
-        mvc.perform(get(URL + "{id}", 1))
+        getAllResultActions(1)
                 .andExpect(status().isNotFound());
     }
 }
