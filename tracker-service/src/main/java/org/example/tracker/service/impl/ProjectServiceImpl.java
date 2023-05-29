@@ -6,7 +6,10 @@ import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TeamEmbeddable;
 import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dto.employee.EmployeeResp;
-import org.example.tracker.dto.project.*;
+import org.example.tracker.dto.project.ProjectFilterParam;
+import org.example.tracker.dto.project.ProjectReq;
+import org.example.tracker.dto.project.ProjectResp;
+import org.example.tracker.dto.project.ProjectUpdateStatusReq;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.exception.*;
@@ -18,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.example.tracker.dao.repository.specification.ProfileSpecs.*;
-import static org.springframework.data.jpa.domain.Specification.where;
+import static org.example.tracker.dao.repository.specification.ProfileSpecs.byFilterParam;
 
 @Service
 @RequiredArgsConstructor
@@ -64,10 +66,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectResp> findByParam(ProjectFilterParam param) {
         List<ProjectEntity> entities = projectRepository.findAll(
-                where((byCodeLikeIgnoreCase(param.getQuery())
-                        .or(byNameLikeIgnoreCase(param.getQuery())))
-                        .and(byStatusIn(param.getStatuses())))
-        );
+                byFilterParam(param));
 
         return entities.stream()
                 .map(modelMapper::toProjectResp)

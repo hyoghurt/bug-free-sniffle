@@ -63,14 +63,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResp> findByParam(TaskFilterParam param) {
         List<TaskEntity> entities = taskRepository.findAll(
-                orderByCreatedDatetime(
-                        byTitleLikeIgnoreCase(param.getQuery())
-                                .and(byAssigneesIdEquals(param.getAssigneesId()))
-                                .and(byAuthorIdEquals(param.getAuthorId()))
-                                .and(byStatusIn(param.getStatuses()))
-                                .and(createdBetween(param.getMinCreatedDatetime(), param.getMaxCreatedDatetime()))
-                                .and(deadlineBetween(param.getMinDeadlineDatetime(), param.getMaxDeadlineDatetime()))
-                ));
+                byFilterParam(param));
 
         return entities.stream()
                 .map(modelMapper::toTaskResp)
