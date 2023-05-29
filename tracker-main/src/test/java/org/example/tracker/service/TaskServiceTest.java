@@ -1,15 +1,18 @@
 package org.example.tracker.service;
 
+import org.example.tracker.dao.entity.EmployeeEntity;
+import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TaskEntity;
+import org.example.tracker.dao.repository.EmployeeRepository;
+import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dao.repository.TaskRepository;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
+import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectResp;
-import org.example.tracker.dto.task.TaskReq;
-import org.example.tracker.dto.task.TaskResp;
-import org.example.tracker.dto.task.TaskStatus;
-import org.example.tracker.dto.task.TaskUpdateStatusReq;
+import org.example.tracker.dto.project.ProjectStatus;
+import org.example.tracker.dto.task.*;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamReq;
 import org.example.tracker.service.exception.EmployeeAlreadyDeletedException;
@@ -22,6 +25,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +44,10 @@ class TaskServiceTest extends BaseTest {
     TaskService taskService;
     @Autowired
     TaskRepository taskRepository;
+    @Autowired
+    EmployeeRepository employeeRepository;
+    @Autowired
+    ProjectRepository projectRepository;
 
     EmployeeResp employeeResp;
     ProjectResp projectResp;
@@ -60,8 +68,34 @@ class TaskServiceTest extends BaseTest {
     }
 
     EmployeeResp createRandomEmployee() {
-        EmployeeReq employeeReq = genEmployeeReq(UUID.randomUUID().toString(), "first", "last");
+        EmployeeReq employeeReq = genEmployeeReq(UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(), UUID.randomUUID().toString());
         return employeeService.create(employeeReq);
+    }
+
+    EmployeeEntity createRandomEmployeeEntity() {
+        EmployeeEntity entity = EmployeeEntity.builder()
+                .upn(UUID.randomUUID().toString())
+                .firstName(UUID.randomUUID().toString())
+                .lastName(UUID.randomUUID().toString())
+                .status(EmployeeStatus.ACTIVE)
+                .build();
+        return employeeRepository.save(entity);
+    }
+
+    ProjectEntity createRandomProjectEntity() {
+        ProjectEntity entity = ProjectEntity.builder()
+                .code(UUID.randomUUID().toString())
+                .name(UUID.randomUUID().toString())
+                .status(ProjectStatus.IN_DEVELOPMENT)
+                .build();
+        return projectRepository.save(entity);
+    }
+
+    ProjectResp createRandomProject() {
+        ProjectReq projectReq = genProjectReq(UUID.randomUUID().toString(),
+                UUID.randomUUID().toString());
+        return projectService.create(projectReq);
     }
 
     @Test
@@ -127,6 +161,43 @@ class TaskServiceTest extends BaseTest {
         assertThrows(TaskStatusIncorrectFlowUpdateException.class, () ->
                 taskService.updateStatus(taskResp.getId(), request)
         );
+    }
+
+    @Test
+    void filter() {
+        EmployeeEntity emp1 = createRandomEmployeeEntity();
+        EmployeeEntity emp2 = createRandomEmployeeEntity();
+
+        ProjectEntity prj1 = createRandomProjectEntity();
+        TaskEntity taskEntity = TaskEntity.builder()
+                .title(UUID.randomUUID().toString())
+                .deadlineDatetime(Instant.now())
+                .laborCostsInHours(1)
+                .authorId(emp2.getId())
+                .assignees(emp1)
+                .createdDatetime(Instant.now())
+                .project(prj1)
+                .status(TaskStatus.OPEN)
+                .build();
+
+        taskRepository.save(taskEntity);
+
+        TaskFilterParam filter;
+        List<TaskResp> active;
+
+        filter = TaskFilterParam.builder()
+                .assigneesId(emp2.getId())
+                .build();
+        active = taskService.findByParam(filter);
+        assertEquals(0, active.size());
+
+        filter = TaskFilterParam.builder()
+                .assigneesId(emp1.getId())
+                .build();
+        active = taskService.findByParam(filter);
+        assertEquals(1, active.size());
+        assertTrue(active.stream()
+                .anyMatch(t -> t.getAssigneesId().equals(emp1.getId())));
     }
 
     TaskResp createBase() {
