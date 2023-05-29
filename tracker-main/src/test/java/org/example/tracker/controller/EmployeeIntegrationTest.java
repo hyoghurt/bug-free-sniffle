@@ -1,18 +1,17 @@
 package org.example.tracker.controller;
 
+import org.example.tracker.EmployeeFilter;
 import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.repository.EmployeeRepository;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.employee.EmployeeStatus;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,9 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EmployeeIntegrationTest extends BaseIntegrationTest {
     final String URL = "/v1/employee";
 
-    @AfterEach
-    void resetDB() {
-        employeeRepository.deleteAll();
+
+    // GET BY ID _________________________________________
+    ResultActions getByIdResultActions(final Object id) throws Exception {
+        return mvc.perform(get(URL + "/{id}", id));
     }
 
     @Test
@@ -34,25 +34,38 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
         EmployeeEntity entity = genRandomEmployeeEntity();
         Integer id = employeeRepository.save(entity).getId();
 
-        mvc.perform(get(URL + "/{id}", id))
+        getByIdResultActions(id)
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers
                         .content().json(asJsonString(modelMapper.toEmployeeResp(entity))));
     }
 
     @Test
-    void getById_404() throws Exception {
-        mvc.perform(get(URL + "/{id}", 1))
+    void getById_notFound_404() throws Exception {
+        getByIdResultActions(1)
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getById_pathTypeMismatch_400() throws Exception {
+        getByIdResultActions("ab")
+                .andExpect(status().isBadRequest());
+    }
+
+
+
+    // CREATE ______________________________________________________
+    ResultActions createResultActions(final Object body) throws Exception {
+        return mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(body)));
     }
 
     @Test
     void create_201() throws Exception {
         EmployeeReq request = genRandomEmployeeReq();
 
-        String content = mvc.perform(post(URL)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        String content = createResultActions(request)
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
@@ -62,13 +75,20 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    void create_incorrectEmailSyntax_400() throws Exception {
+        EmployeeReq request = genRandomEmployeeReq();
+        request.setEmail("username@.com");
+
+        createResultActions(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void create_duplicateUpn_400() throws Exception {
         EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
         EmployeeReq request = genEmployeeReq(entity.getUpn(), "first", "last");
 
-        mvc.perform(post(URL)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        createResultActions(request)
                 .andExpect(status().isBadRequest());
     }
 
@@ -76,10 +96,17 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
     void create_requiredField_400() throws Exception {
         EmployeeReq request = genEmployeeReq(UUID.randomUUID().toString(), null, "last");
 
-        mvc.perform(post(URL)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        createResultActions(request)
                 .andExpect(status().isBadRequest());
+    }
+
+
+
+    // UPDATE ______________________________________________________
+    ResultActions updateResultActions(final Object id, final Object body) throws Exception {
+        return mvc.perform(put(URL + "/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(body)));
     }
 
     @Test
@@ -87,9 +114,7 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
         EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
         EmployeeReq request = genRandomEmployeeReq();
 
-        mvc.perform(put(URL + "/{id}", entity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        updateResultActions(entity.getId(), request)
                 .andExpect(status().isOk());
 
         EmployeeEntity updateEntity = employeeRepository.findById(entity.getId()).orElse(new EmployeeEntity());
@@ -99,12 +124,10 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void update_404() throws Exception {
+    void update_notFound_404() throws Exception {
         EmployeeReq request = genRandomEmployeeReq();
 
-        mvc.perform(put(URL + "/{id}", 1)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        updateResultActions(1, request)
                 .andExpect(status().isNotFound());
     }
 
@@ -114,9 +137,7 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
         EmployeeEntity entity2 = employeeRepository.save(genRandomEmployeeEntity());
         EmployeeReq request = genEmployeeReq(entity.getUpn(), "first", "last");
 
-        mvc.perform(put(URL + "/{id}", entity2.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        updateResultActions(entity2.getId(), request)
                 .andExpect(status().isBadRequest());
     }
 
@@ -125,17 +146,22 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
         EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity(EmployeeStatus.DELETED));
         EmployeeReq request = genRandomEmployeeReq();
 
-        mvc.perform(put(URL + "/{id}", entity.getId())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(asJsonString(request)))
+        updateResultActions(entity.getId(), request)
                 .andExpect(status().isBadRequest());
+    }
+
+
+
+    // DELETE ______________________________________________________
+    ResultActions deleteResultActions(Object id) throws Exception {
+        return mvc.perform(delete(URL + "/{id}", id));
     }
 
     @Test
     void delete_200() throws Exception {
         EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
 
-        mvc.perform(delete(URL + "/{id}", entity.getId()))
+        deleteResultActions(entity.getId())
                 .andExpect(status().isOk());
 
         EmployeeEntity deleteEntity = employeeRepository.findById(entity.getId()).orElse(new EmployeeEntity());
@@ -143,59 +169,41 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void delete_404() throws Exception {
-        mvc.perform(delete(URL + "/{id}", 1))
+    void delete_notFound_404() throws Exception {
+        deleteResultActions(1)
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void getAll_200() throws Exception {
-        List<EmployeeEntity> entities = initEntity();
-        List<EmployeeResp> expected = myFilter(entities, null);
 
-        mvc.perform(get(URL + "s"))
+
+    // GET ALL BY PARAM ______________________________________________________
+    void getAllByParam(final String query) throws Exception {
+        List<EmployeeEntity> entities = initEmployeeEntities();
+        List<EmployeeResp> expected = EmployeeFilter.filter(entities, query).stream()
+                .map(modelMapper::toEmployeeResp)
+                .toList();
+
+        MockHttpServletRequestBuilder requestBuilder = get(URL + "s");
+        if (query != null) requestBuilder.param("query", query);
+
+        mvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content()
                         .json(asJsonString(expected)));
     }
 
     @Test
-    void getAllBySearch_200() throws Exception {
-        final String SEARCH = "tEst";
-        List<EmployeeEntity> entities = initEntity();
-        List<EmployeeResp> expected = myFilter(entities, SEARCH);
-
-        mvc.perform(get(URL + "s").param("query", SEARCH))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(asJsonString(expected)));
+    void getAllByParam_paramNull_200() throws Exception {
+        getAllByParam(null);
     }
 
-    List<EmployeeResp> myFilter(List<EmployeeEntity> entities, String search) {
-        return entities.stream().filter(e ->
-                (
-                        search == null
-                                || e.getFirstName().toUpperCase().contains(search.toUpperCase())
-                                || e.getLastName().toUpperCase().contains(search.toUpperCase())
-                                || (e.getMiddleName() != null && e.getMiddleName().toUpperCase().contains(search.toUpperCase()))
-                                || (e.getEmail() != null && e.getEmail().toUpperCase().contains(search.toUpperCase()))
-                                || (e.getUpn() != null && e.getUpn().toUpperCase().contains(search.toUpperCase()))
-                ) && (
-                        e.getStatus().equals(EmployeeStatus.ACTIVE)
-                )
-        ).map(modelMapper::toEmployeeResp).toList();
+    @Test
+    void getAllByParam_paramEmptyString_200() throws Exception {
+        getAllByParam("");
     }
 
-    List<EmployeeEntity> initEntity() {
-        List<EmployeeEntity> entities = new ArrayList<>();
-        System.out.println("CREATE Employee ENTITIES--------------------------");
-        entities.add(employeeRepository.save(genEmployeeEntity("testName", "last", null, null, null, null, EmployeeStatus.ACTIVE)));
-        entities.add(employeeRepository.save(genEmployeeEntity("name", "lastTest", null, null, null, null, EmployeeStatus.ACTIVE)));
-        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", "midtestname", null, null, null, EmployeeStatus.ACTIVE)));
-        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", null, "testmail", null, null, EmployeeStatus.ACTIVE)));
-        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", null, null, "testupn", null, EmployeeStatus.ACTIVE)));
-        entities.add(employeeRepository.save(genEmployeeEntity("name", "last", null, null, null, "postest", EmployeeStatus.ACTIVE)));
-        entities.add(employeeRepository.save(genEmployeeEntity("testFirst", "testLast", "testMiddle", "testEmail", "testUpn", "testPosition", EmployeeStatus.DELETED)));
-        return entities;
+    @Test
+    void getAllByParam_paramQuery_200() throws Exception {
+        getAllByParam("tEst");
     }
 }

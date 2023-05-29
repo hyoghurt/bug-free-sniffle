@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +26,17 @@ public class ExceptionController {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<Problem> problem(final Throwable e) {
-        String message = "Problem occured";
+    public ResponseEntity<ErrorResp> problem(final Throwable e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String message = "Problem occurred";
         UUID uuid = UUID.randomUUID();
         String logRef = uuid.toString();
         logger.error("logRef=" + logRef, message, e);
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        return new ResponseEntity<Problem>(new Problem(logRef, message), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity
+                .status(status)
+                .body(ErrorResp.builder()
+                        .message(logRef + " : " + message)
+                        .build());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -71,13 +77,15 @@ public class ExceptionController {
     }
 
     @ExceptionHandler({
+            HttpMessageNotReadableException.class, // error parse json to java type
+            MethodArgumentTypeMismatchException.class, // endpoint path incorrect type
             EmployeeNotFoundInTeamException.class,
             EmployeeAlreadyDeletedException.class,
             EmployeeAlreadyExistsInTeamException.class,
             DuplicateUniqueFieldException.class,
             RequiredFieldException.class,
             ProjectStatusIncorrectFlowUpdateException.class,
-            RoleAlreadyExistsInTeamException.class
+            RoleAlreadyExistsInTeamException.class,
     })
     public ResponseEntity<ErrorResp> handleBadRequest(RuntimeException ex) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
