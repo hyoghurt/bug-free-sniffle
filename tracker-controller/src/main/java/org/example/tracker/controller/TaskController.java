@@ -14,6 +14,7 @@ import org.example.tracker.dto.task.*;
 import org.example.tracker.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -24,6 +25,7 @@ import java.util.List;
 @Tag(name = "task", description = "управление задачами")
 @SecurityRequirement(name = "basicScheme")
 @ApiResponse(responseCode = "401", content = @Content)
+//@Validated // validate path, param
 public class TaskController {
     private final TaskService taskService;
 
@@ -98,14 +100,14 @@ public class TaskController {
     @GetMapping(value = "/v1/tasks",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskResp> getAllByFilter(
-            @Parameter(description = "текстовая строка") String query,
-            @Parameter(description = "список статусов") List<TaskStatus> statuses,
-            @Parameter(description = "уникальный идентификатор автора") Integer authorId,
-            @Parameter(description = "уникальный идентификатор исполнителя") Integer assigneesId,
-            @Parameter(description = "минимальная дата+время создания") Instant minCreatedDatetime,
-            @Parameter(description = "максимальная дата+время создания") Instant maxCreatedDatetime,
-            @Parameter(description = "минимальная дата+время окончания") Instant minDeadlineDatetime,
-            @Parameter(description = "максимальная дата+время окончания") Instant maxDeadlineDatetime
+            @Parameter(description = "текстовая строка") @RequestParam(required = false) String query,
+            @Parameter(description = "список статусов") @RequestParam(required = false) List<TaskStatus> statuses,
+            @Parameter(description = "уникальный идентификатор автора") @RequestParam(required = false) Integer authorId,
+            @Parameter(description = "уникальный идентификатор исполнителя") @RequestParam(required = false) Integer assigneesId,
+            @Parameter(description = "минимальная дата+время создания") @RequestParam(required = false) Instant minCreatedDatetime,
+            @Parameter(description = "максимальная дата+время создания") @RequestParam(required = false) Instant maxCreatedDatetime,
+            @Parameter(description = "минимальная дата+время окончания") @RequestParam(required = false) Instant minDeadlineDatetime,
+            @Parameter(description = "максимальная дата+время окончания") @RequestParam(required = false) Instant maxDeadlineDatetime
     ) {
 
         return taskService.findByParam(TaskFilterParam.builder()

@@ -5,7 +5,6 @@ import org.example.tracker.dto.error.ErrorResp;
 import org.example.tracker.service.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -79,6 +78,7 @@ public class ExceptionController {
     @ExceptionHandler({
             HttpMessageNotReadableException.class, // error parse json to java type
             MethodArgumentTypeMismatchException.class, // endpoint path incorrect type
+            TaskStatusIncorrectFlowUpdateException.class,
             EmployeeNotFoundInTeamException.class,
             EmployeeAlreadyDeletedException.class,
             EmployeeAlreadyExistsInTeamException.class,

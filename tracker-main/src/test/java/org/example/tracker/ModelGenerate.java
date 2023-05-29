@@ -2,6 +2,7 @@ package org.example.tracker;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
+import org.example.tracker.dao.entity.TaskEntity;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.dto.project.ProjectReq;
@@ -12,12 +13,36 @@ import org.example.tracker.dto.team.TeamReq;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.UUID;
 
 public class ModelGenerate {
 
     // TASK
+    public TaskEntity genRandomTaskEntity(Integer authorId, EmployeeEntity assignees, ProjectEntity project) {
+        return TaskEntity.builder()
+                .authorId(authorId)
+                .assignees(assignees)
+                .project(project)
+                .title(UUID.randomUUID().toString())
+                .createdDatetime(Instant.now())
+                .laborCostsInHours(1)
+                .deadlineDatetime(Instant.now().plus(4, ChronoUnit.HOURS))
+                .build();
+    }
+
+    public TaskEntity genRandomTaskEntity(Integer authorId, EmployeeEntity assignees, ProjectEntity project, Instant created) {
+        return TaskEntity.builder()
+                .authorId(authorId)
+                .assignees(assignees)
+                .project(project)
+                .title(UUID.randomUUID().toString())
+                .createdDatetime(created)
+                .laborCostsInHours(1)
+                .deadlineDatetime(created.plus(5, ChronoUnit.HOURS))
+                .build();
+    }
+
+
     public TaskReq genRandomTaskReq(Integer projectId, Integer assigneesId) {
         return TaskReq.builder()
                 .title(UUID.randomUUID().toString())

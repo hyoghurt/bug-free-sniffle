@@ -17,7 +17,6 @@ import org.example.tracker.service.exception.EmployeeNotFoundInTeamException;
 import org.example.tracker.service.exception.TaskNotFoundException;
 import org.example.tracker.service.exception.TaskStatusIncorrectFlowUpdateException;
 import org.example.tracker.service.mapper.ModelMapper;
-import org.springframework.orm.hibernate5.SpringSessionContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +46,10 @@ public class TaskServiceImpl implements TaskService {
     public TaskResp update(Integer id, TaskReq request) {
         TaskEntity entity = validate(id, request);
         entity.setUpdateDatetime(Instant.now());
+        entity.setTitle(request.getTitle());
+        entity.setDescription(request.getDescription());
+        entity.setLaborCostsInHours(request.getLaborCostsInHours());
+        entity.setDeadlineDatetime(request.getDeadlineDatetime());
         return modelMapper.toTaskResp(entity);
     }
 
@@ -61,6 +64,14 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public void updateStatus(Integer id, TaskUpdateStatusReq request) {
         TaskEntity entity = getTaskEntity(id);
+
+        // check author in project team
+        String upn = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (entity.getProject().getTeams().stream()
+                .noneMatch(team -> team.getEmployee().getUpn().equals(upn))) {
+            throw new EmployeeNotFoundInTeamException(String.format("employee{upn:%s} not found in team", upn));
+        }
+
         if (request.getStatus().ordinal() < entity.getStatus().ordinal()) {
             throw new TaskStatusIncorrectFlowUpdateException(String
                     .format("task status incorrect flow update: %s -> %s",
