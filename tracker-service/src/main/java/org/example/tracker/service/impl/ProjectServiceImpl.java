@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.example.tracker.dao.repository.specification.ProfileSpecs.byFilterParam;
+
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
@@ -63,8 +65,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectResp> getAllByFilter(ProjectFilterParam filter) {
-        List<ProjectEntity> entities = projectRepository.findAllByFilter(filter);
+    public List<ProjectResp> getAllByFilter(ProjectFilterParam param) {
+        List<ProjectEntity> entities = projectRepository.findAll(
+                byFilterParam(param));
+
         return entities.stream()
                 .map(modelMapper::toProjectResp)
                 .collect(Collectors.toList());

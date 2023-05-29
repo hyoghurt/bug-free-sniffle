@@ -17,7 +17,6 @@ import org.example.tracker.service.exception.EmployeeNotFoundInTeamException;
 import org.example.tracker.service.exception.TaskNotFoundException;
 import org.example.tracker.service.exception.TaskStatusIncorrectFlowUpdateException;
 import org.example.tracker.service.mapper.ModelMapper;
-import org.springframework.orm.hibernate5.SpringSessionContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.example.tracker.dao.repository.specification.TaskSpecs.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +53,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskResp> findByParam(TaskFilterParam param) {
-        return taskRepository.findAllByFilter(param).stream()
+        List<TaskEntity> entities = taskRepository.findAll(
+                byFilterParam(param));
+
+        return entities.stream()
                 .map(modelMapper::toTaskResp)
                 .collect(Collectors.toList());
     }
