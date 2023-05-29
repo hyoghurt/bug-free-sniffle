@@ -6,17 +6,26 @@
 
     <groupId>org.example.tracker</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.1.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
     <properties>
+        <revision>0.0.1-SNAPSHOT</revision>
+
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <postgresql.version>42.6.0</postgresql.version>
-        <lombok.version>1.18.26</lombok.version>
+        <hypersistence.utils.version>3.3.2</hypersistence.utils.version>
     </properties>
 
     <modules>
@@ -31,27 +40,27 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.example.tracker</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>tracker-controller</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.example.tracker</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>tracker-dto</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.example.tracker</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>tracker-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.example.tracker</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>tracker-dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.example.tracker</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>tracker-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -61,16 +70,34 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
+                <scope>runtime</scope>
             </dependency>
+            <!-- postgresql type ENUM mapping -->
+            <dependency>
+                <groupId>io.hypersistence</groupId>
+                <artifactId>hypersistence-utils-hibernate-62</artifactId>
+                <version>${hypersistence.utils.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- TEST -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

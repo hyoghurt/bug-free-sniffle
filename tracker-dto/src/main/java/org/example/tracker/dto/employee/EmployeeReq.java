@@ -1,10 +1,10 @@
 package org.example.tracker.dto.employee;
 
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
-// создание сотрудника
-// изменение сотрудника
 @Data
+@SuperBuilder
 public class EmployeeReq {
     private String firstName; //required
     private String lastName; //required

@@ -1,12 +1,54 @@
 package org.example.tracker.dao.entity;
 
 
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
+import jakarta.persistence.*;
+import lombok.*;
 import org.example.tracker.dto.project.ProjectStatus;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+@Getter
+@Setter
+@ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "projects")
 public class ProjectEntity {
-    private int id; //fk
-    private String code; //required
-    private String name; //required
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String code;
+    private String name;
     private String description;
-    private ProjectStatus status; //required
+
+    @Enumerated(EnumType.STRING)
+    @Type(value = PostgreSQLEnumType.class) // нужен, если используется тип ENUM в Postgres https://vladmihalcea.com/the-best-way-to-map-an-enum-type-with-jpa-and-hibernate/
+    @Column(columnDefinition = "project_status") // указываем как называется тип в Postgres
+    @Builder.Default // https://www.baeldung.com/lombok-builder-default-value
+    private ProjectStatus status = ProjectStatus.DRAFT;
+
+    @ElementCollection
+    @CollectionTable(joinColumns = @JoinColumn(name = "project_id"), name = "teams")
+    private Set<TeamEmbeddable> teams = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ProjectEntity that = (ProjectEntity) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
