@@ -1,10 +1,9 @@
 package org.example.tracker.controller;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import lombok.extern.slf4j.Slf4j;
 import org.example.tracker.dto.error.ErrorResp;
 import org.example.tracker.service.exception.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -19,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Hidden
 @RestControllerAdvice
 public class ExceptionController {
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ErrorResp> problem(final Throwable e) {
@@ -30,7 +29,7 @@ public class ExceptionController {
         String message = "Problem occurred";
         UUID uuid = UUID.randomUUID();
         String logRef = uuid.toString();
-        logger.error("logRef=" + logRef, message, e);
+        log.error("logRef={} {} {}", logRef, message, e);
         return ResponseEntity
                 .status(status)
                 .body(ErrorResp.builder()
@@ -45,12 +44,10 @@ public class ExceptionController {
         List<String> errors = new ArrayList<>(fieldErrors.size() + globalErrors.size());
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        fieldErrors.forEach(fieldError -> {
-            errors.add(fieldError.getField() + ", " + fieldError.getDefaultMessage());
-        });
-        globalErrors.forEach(objectError -> {
-            errors.add(objectError.getObjectName() + ", " + objectError.getDefaultMessage());
-        });
+        fieldErrors.forEach(fieldError -> errors
+                .add(fieldError.getField() + ", " + fieldError.getDefaultMessage()));
+        globalErrors.forEach(objectError -> errors
+                .add(objectError.getObjectName() + ", " + objectError.getDefaultMessage()));
 
         return ResponseEntity
                 .status(status)

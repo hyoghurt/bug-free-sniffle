@@ -14,7 +14,6 @@ import org.example.tracker.dto.task.*;
 import org.example.tracker.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -110,7 +109,7 @@ public class TaskController {
             @Parameter(description = "максимальная дата+время окончания") @RequestParam(required = false) Instant maxDeadlineDatetime
     ) {
 
-        return taskService.findByParam(TaskFilterParam.builder()
+        return taskService.getAllByParam(TaskFilterParam.builder()
                 .query(query)
                 .statuses(statuses)
                 .authorId(authorId)

@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -119,27 +118,27 @@ class ProjectControllerTest {
     @Test
     void getAllByParam_200() throws Exception {
         ProjectResp resp = genRandomProjectResp();
-        Mockito.when(service.getAllByFilter(Mockito.any())).thenReturn(List.of(resp));
+        Mockito.when(service.getAllByParam(Mockito.any())).thenReturn(List.of(resp));
 
         getAllByParamResultActions("hello", List.of("DRAFT"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content()
                         .json(mapper.writeValueAsString(List.of(resp))));
 
-        Mockito.verify(service, Mockito.times(1)).getAllByFilter(Mockito.any());
+        Mockito.verify(service, Mockito.times(1)).getAllByParam(Mockito.any());
     }
 
     @Test
     void getAllByParam_paramNull_200() throws Exception {
         ProjectResp resp = genRandomProjectResp();
-        Mockito.when(service.getAllByFilter(Mockito.any())).thenReturn(List.of(resp));
+        Mockito.when(service.getAllByParam(Mockito.any())).thenReturn(List.of(resp));
 
         getAllByParamResultActions(null, null)
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content()
                         .json(mapper.writeValueAsString(List.of(resp))));
 
-        Mockito.verify(service, Mockito.times(1)).getAllByFilter(Mockito.any());
+        Mockito.verify(service, Mockito.times(1)).getAllByParam(Mockito.any());
     }
 
 

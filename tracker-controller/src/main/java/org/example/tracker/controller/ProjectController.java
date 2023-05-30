@@ -77,7 +77,7 @@ public class ProjectController {
                                             @Parameter(description = "список статусов для фильтра")
                                             @RequestParam(required = false) List<ProjectStatus> statuses) {
 
-        return projectService.getAllByFilter(new ProjectFilterParam(query, statuses));
+        return projectService.getAllByParam(new ProjectFilterParam(query, statuses));
     }
 
     @Operation(summary = "изменение статуса",

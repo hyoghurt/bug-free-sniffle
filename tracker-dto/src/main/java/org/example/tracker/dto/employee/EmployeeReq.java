@@ -38,8 +38,7 @@ public class EmployeeReq {
     private String upn;
 
     @Schema(description = "электронная почта", example = "dvornik@yandex.ru")
-    @Email(message = "email is not valid", regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@" +
-            "[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$")
+    @Email(message = "email is not valid")
     @Size(max = 128, message = "length <= 128")
     private String email;
 }

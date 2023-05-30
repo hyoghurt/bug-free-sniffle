@@ -1,6 +1,7 @@
 package org.example.tracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.repository.EmployeeRepository;
 import org.example.tracker.dto.employee.EmployeeReq;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
@@ -25,6 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResp getById(Integer id) {
+        log.info("get employee {}", id);
         EmployeeEntity entity = getEmployeeEntity(id);
         return modelMapper.toEmployeeResp(entity);
     }
@@ -38,6 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResp create(EmployeeReq request) {
+        log.info("create: {}", request);
         EmployeeEntity entity = modelMapper.toEmployeeEntity(request);
         save(entity);
         return modelMapper.toEmployeeResp(entity);
@@ -45,8 +49,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResp update(Integer id, EmployeeReq request) {
+        log.info("update id: {} body: {}", id, request);
         EmployeeEntity entity = getEmployeeEntity(id);
-        if (entity.getStatus().equals(EmployeeStatus.DELETED)) {
+        if (isDeleted(entity)) {
+            log.warn("employee {} is deleted", entity.getId());
             throw new EmployeeAlreadyDeletedException("employee already deleted: " + entity.getId());
         }
         mergeRequestToEntity(request, entity);
@@ -59,6 +65,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepository.save(entity);
         } catch (DataIntegrityViolationException e) {
             if (e.getMessage().contains("employees_upn_key")) {
+                log.warn("duplicate upn: {}", entity.getUpn());
                 throw new DuplicateUniqueFieldException("employee duplicate upn " + entity.getUpn());
             }
             throw e;
@@ -76,6 +83,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void delete(Integer id) {
+        log.info("delete id: {}", id);
         int result = employeeRepository.updateStatusById(id);
         if (result == 0) {
             throw new EmployeeNotFoundException("not found employee " + id);
@@ -84,6 +92,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<EmployeeResp> getAllByQuery(String query) {
+        log.info("get all by param: {}", query);
         return employeeRepository.findAllByQuery(query).stream()
                 .map(modelMapper::toEmployeeResp)
                 .collect(Collectors.toList());
