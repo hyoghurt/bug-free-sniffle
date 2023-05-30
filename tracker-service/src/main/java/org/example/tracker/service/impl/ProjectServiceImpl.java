@@ -65,7 +65,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectResp> findByParam(ProjectFilterParam param) {
+    public List<ProjectResp> getAllByFilter(ProjectFilterParam param) {
         List<ProjectEntity> entities = projectRepository.findAll(
                 byFilterParam(param));
 
