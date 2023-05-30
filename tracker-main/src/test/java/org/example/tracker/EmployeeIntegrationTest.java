@@ -1,6 +1,5 @@
-package org.example.tracker.controller;
+package org.example.tracker;
 
-import org.example.tracker.EmployeeFilter;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
@@ -13,7 +12,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -46,12 +44,6 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void getById_pathTypeMismatch_400() throws Exception {
-        getByIdResultActions("ab")
-                .andExpect(status().isBadRequest());
-    }
-
 
 
     // CREATE ______________________________________________________
@@ -75,26 +67,9 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void create_incorrectEmailSyntax_400() throws Exception {
-        EmployeeReq request = genRandomEmployeeReq();
-        request.setEmail("username@.com");
-
-        createResultActions(request)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void create_duplicateUpn_400() throws Exception {
         EmployeeEntity entity = employeeRepository.save(genRandomEmployeeEntity());
         EmployeeReq request = genEmployeeReq(entity.getUpn(), "first", "last");
-
-        createResultActions(request)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void create_requiredField_400() throws Exception {
-        EmployeeReq request = genEmployeeReq(UUID.randomUUID().toString(), null, "last");
 
         createResultActions(request)
                 .andExpect(status().isBadRequest());

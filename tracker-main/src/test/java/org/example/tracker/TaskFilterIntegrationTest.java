@@ -1,7 +1,6 @@
-package org.example.tracker.controller;
+package org.example.tracker;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.example.tracker.TaskFilter;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TaskEntity;

@@ -25,11 +25,9 @@ import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@SpringBootTest
 @AutoConfigureMockMvc
 @SpringBootTest(classes = {EmployeeController.class, ExceptionController.class})
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class})
-@ActiveProfiles("dev")
 class EmployeeControllerTest {
     @Autowired
     private MockMvc mvc;

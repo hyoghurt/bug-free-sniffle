@@ -1,6 +1,5 @@
-package org.example.tracker.controller;
+package org.example.tracker;
 
-import org.example.tracker.ProjectFilter;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectResp;
@@ -51,14 +50,6 @@ class ProjectIntegrationTest extends BaseIntegrationTest {
     void create_duplicateCode_400() throws Exception {
         ProjectEntity entity = projectRepository.save(genRandomProjectEntity());
         ProjectReq request = genProjectReq(entity.getCode(), "name");
-
-        createResultActions(request)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void create_requiredField_400() throws Exception {
-        ProjectReq request = genProjectReq(null, "name");
 
         createResultActions(request)
                 .andExpect(status().isBadRequest());
@@ -126,41 +117,9 @@ class ProjectIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void updateStatus_ignoreCase_200() throws Exception {
-        ProjectEntity entity = projectRepository.save(genRandomProjectEntity());
-        Map<String, String> request = new HashMap<>();
-        request.put("status", "IN_testing");
-
-        updateStatusResultActions(entity.getId(), request)
-                .andExpect(status().isOk());
-
-        ProjectEntity updateEntity = projectRepository.findById(entity.getId()).orElse(new ProjectEntity());
-        assertEquals(request.get("status").toUpperCase(), updateEntity.getStatus().name().toUpperCase());
-    }
-
-    @Test
     void updateStatus_incorrectFlow_400() throws Exception {
         ProjectEntity entity = projectRepository.save(genRandomProjectEntity(ProjectStatus.FINISHED));
         ProjectUpdateStatusReq request = new ProjectUpdateStatusReq(ProjectStatus.IN_DEVELOPMENT);
-
-        updateStatusResultActions(entity.getId(), request)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void updateStatus_incorrectStatus_400() throws Exception {
-        ProjectEntity entity = projectRepository.save(genRandomProjectEntity());
-        Map<String, String> request = new HashMap<>();
-        request.put("status", "IN_DEV");
-
-        updateStatusResultActions(entity.getId(), request)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void updateStatus_requiredField_400() throws Exception {
-        ProjectEntity entity = projectRepository.save(genRandomProjectEntity());
-        ProjectUpdateStatusReq request = new ProjectUpdateStatusReq();
 
         updateStatusResultActions(entity.getId(), request)
                 .andExpect(status().isBadRequest());

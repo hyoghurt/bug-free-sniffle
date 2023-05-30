@@ -1,4 +1,4 @@
-package org.example.tracker.controller;
+package org.example.tracker;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;

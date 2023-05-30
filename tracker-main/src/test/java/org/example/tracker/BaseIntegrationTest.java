@@ -1,4 +1,4 @@
-package org.example.tracker.controller;
+package org.example.tracker;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,14 +7,12 @@ import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.repository.EmployeeRepository;
 import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dao.repository.TaskRepository;
-import org.example.tracker.ModelGenerate;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.service.mapper.ModelMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -24,7 +22,6 @@ import java.util.List;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-@ActiveProfiles("dev")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BaseIntegrationTest extends ModelGenerate {
 

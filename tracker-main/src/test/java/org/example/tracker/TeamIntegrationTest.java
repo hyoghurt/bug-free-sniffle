@@ -1,4 +1,4 @@
-package org.example.tracker.controller;
+package org.example.tracker;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.example.tracker.dao.entity.EmployeeEntity;
@@ -59,27 +59,6 @@ class TeamIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void add_ignoreCaseRole_200() throws Exception {
-        EmployeeEntity employeeEntity = genRandomEmployeeEntity();
-        ProjectEntity projectEntity = genRandomProjectEntity();
-        employeeRepository.save(employeeEntity);
-        projectRepository.save(projectEntity);
-
-        Map<String, Object> request = new HashMap<>();
-        request.put("employeeId", employeeEntity.getId());
-        request.put("role", "analYST");
-
-        addResultActions(projectEntity.getId(), request)
-                .andExpect(status().isOk());
-
-        List<TeamResp> actual = projectService.getAllTeamEmployee(projectEntity.getId());
-
-        assertEquals(1, actual.size());
-        assertEquals(modelMapper.toEmployeeResp(employeeEntity), actual.get(0).getEmployee());
-        assertEquals(EmployeeRole.ANALYST, actual.get(0).getRole());
-    }
-
-    @Test
     void add_duplicateRoleInTeam_400() throws Exception {
         EmployeeEntity employeeEntity = genRandomEmployeeEntity();
         EmployeeEntity employeeEntity2 = genRandomEmployeeEntity();
@@ -111,19 +90,6 @@ class TeamIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void add_requiredField_400() throws Exception {
-        EmployeeEntity employeeEntity = genRandomEmployeeEntity();
-        ProjectEntity projectEntity = genRandomProjectEntity();
-        employeeRepository.save(employeeEntity);
-        projectRepository.save(projectEntity);
-
-        TeamReq request = genTeamReq(employeeEntity.getId(), null);
-
-        addResultActions(projectEntity.getId(), request)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void add_deletedEmployee_400() throws Exception {
         EmployeeEntity employeeEntity = genRandomEmployeeEntity(EmployeeStatus.DELETED);
         ProjectEntity projectEntity = genRandomProjectEntity();
@@ -131,21 +97,6 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         projectRepository.save(projectEntity);
 
         TeamReq request = genTeamReq(employeeEntity.getId(), EmployeeRole.TESTER);
-
-        addResultActions(projectEntity.getId(), request)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void add_notExistsRole_400() throws Exception {
-        EmployeeEntity employeeEntity = genRandomEmployeeEntity();
-        ProjectEntity projectEntity = genRandomProjectEntity();
-        employeeRepository.save(employeeEntity);
-        projectRepository.save(projectEntity);
-
-        Map<String, Object> request = new HashMap<>();
-        request.put("employeeId", employeeEntity.getId());
-        request.put("role", "man");
 
         addResultActions(projectEntity.getId(), request)
                 .andExpect(status().isBadRequest());

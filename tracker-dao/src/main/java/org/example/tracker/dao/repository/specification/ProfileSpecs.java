@@ -22,7 +22,7 @@ public final class ProfileSpecs {
                 String reg = "%" + search.toUpperCase() + "%";
                 predicates.add(cb
                         .or(
-                                cb.like(cb.upper(root.get(ProjectEntity_.code)), reg),
+                                cb.like(cb.upper(root.get(ProjectEntity_.name)), reg),
                                 cb.like(cb.upper(root.get(ProjectEntity_.code)), reg)
                         ));
             }
