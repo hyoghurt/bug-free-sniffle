@@ -1,9 +1,6 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/tracker
-    username: user
-    password: example
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: false
@@ -24,8 +21,6 @@ springdoc:
   swagger-ui:
     tagsSorter: alpha
     operationsSorter: method
-#  packages-to-scan: org.example.tracker.controller
-#  show-login-endpoint: true
 
 custom:
   security:

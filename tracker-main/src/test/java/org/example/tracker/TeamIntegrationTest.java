@@ -15,12 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
@@ -29,7 +30,6 @@ class TeamIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     ProjectService projectService;
-
 
 
     // ADD __________________________________________________
@@ -71,7 +71,6 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         TeamReq request = genTeamReq(employeeEntity2.getId(), EmployeeRole.ANALYST);
 
         addResultActions(projectEntity.getId(), request)
-                .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
@@ -125,7 +124,6 @@ class TeamIntegrationTest extends BaseIntegrationTest {
     }
 
 
-
     // DELETED __________________________________________________
     ResultActions deleteResultActions(final Integer id, final Integer employeeId) throws Exception {
         return mvc.perform(delete(URL + "/{id}/{emId}", id, employeeId));
@@ -174,7 +172,6 @@ class TeamIntegrationTest extends BaseIntegrationTest {
         deleteResultActions(projectEntity.getId(), employeeEntity.getId())
                 .andExpect(status().isNotFound());
     }
-
 
 
     // GET ALL __________________________________________________

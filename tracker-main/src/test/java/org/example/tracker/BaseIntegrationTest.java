@@ -9,13 +9,15 @@ import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dao.repository.TaskRepository;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.service.mapper.ModelMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,16 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BaseIntegrationTest extends ModelGenerate {
+
+    public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:14.4");
+
+    @DynamicPropertySource
+    public static void overrideProperties(DynamicPropertyRegistry registry) {
+        container.start();
+        registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.username", container::getUsername);
+        registry.add("spring.datasource.password", container::getPassword);
+    }
 
     MockMvc mvc;
     @Autowired
@@ -45,10 +57,7 @@ class BaseIntegrationTest extends ModelGenerate {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-    }
 
-    @AfterEach
-    void resetDB() {
         taskRepository.deleteAll();
         projectRepository.deleteAll();
         employeeRepository.deleteAll();
