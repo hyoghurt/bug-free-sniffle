@@ -23,6 +23,7 @@ import java.util.List;
 @Tag(name = "project", description = "управление проектами")
 @SecurityRequirement(name = "basicScheme")
 @ApiResponse(responseCode = "401", content = @Content)
+@RequestMapping("/projects")
 public class ProjectController {
     private final ProjectService projectService;
 
@@ -34,7 +35,7 @@ public class ProjectController {
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/v1/project",
+    @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ProjectResp create(@RequestBody @Valid ProjectReq request) {
@@ -51,7 +52,7 @@ public class ProjectController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @PutMapping(value = "/v1/project/{id}",
+    @PutMapping(value = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ProjectResp update(@Parameter(description = "уникальный идентификатор проекта")
@@ -70,8 +71,7 @@ public class ProjectController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @GetMapping(value = "/v1/projects",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProjectResp> getAllByFilter(@Parameter(description = "текстовое значение для поиска")
                                             @RequestParam(required = false) String query,
                                             @Parameter(description = "список статусов для фильтра")
@@ -90,8 +90,7 @@ public class ProjectController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @PutMapping(value = "/v1/project/{id}/status",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void updateStatus(@Parameter(description = "уникальный идентификатор проекта")
                              @PathVariable Integer id,
                              @RequestBody @Valid ProjectUpdateStatusReq request) {

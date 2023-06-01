@@ -24,6 +24,7 @@ import java.util.List;
 @Tag(name = "task", description = "управление задачами")
 @SecurityRequirement(name = "basicScheme")
 @ApiResponse(responseCode = "401", content = @Content)
+@RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
 
@@ -38,7 +39,7 @@ public class TaskController {
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/v1/task",
+    @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TaskResp create(@RequestBody @Valid TaskReq request) {
@@ -55,7 +56,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @PutMapping(value = "/v1/task/{id}",
+    @PutMapping(value = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TaskResp update(@Parameter(description = "уникальный идентификатор задачи")
@@ -75,8 +76,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @PutMapping(value = "/v1/task/{id}/status",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void updateStatus(@Parameter(description = "уникальный идентификатор задачи")
                              @PathVariable Integer id,
                              @RequestBody @Valid TaskUpdateStatusReq request) {
@@ -95,8 +95,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @GetMapping(value = "/v1/tasks",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskResp> getAllByFilter(
             @Parameter(description = "текстовая строка") String query,
             @Parameter(description = "список статусов") List<TaskStatus> statuses,
