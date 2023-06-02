@@ -57,7 +57,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @DeleteMapping(value = "/{projectId}/{employeeId}")
+    @DeleteMapping(value = "/{projectId}/employees/{employeeId}")
     public void removeEmployee(@Parameter(description = "уникальный идентификатор проекта")
                                @PathVariable Integer projectId,
                                @Parameter(description = "уникальный идентификатор сотрудника")
