@@ -98,7 +98,7 @@ public class TaskController {
             })
     @GetMapping(value = "/v1/tasks",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskResp> getAllByFilter(
+    public List<TaskResp> getAllByParam(
             @Parameter(description = "текстовая строка") @RequestParam(required = false) String query,
             @Parameter(description = "список статусов") @RequestParam(required = false) List<TaskStatus> statuses,
             @Parameter(description = "уникальный идентификатор автора") @RequestParam(required = false) Integer authorId,

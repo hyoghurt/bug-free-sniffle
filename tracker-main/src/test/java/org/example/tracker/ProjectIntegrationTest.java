@@ -9,19 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
-class ProjectIntegrationTest extends BaseIntegrationTest {
+class ProjectIntegrationTest extends Base {
     final String URL = "/v1/project";
 
 
@@ -131,52 +126,5 @@ class ProjectIntegrationTest extends BaseIntegrationTest {
 
         updateStatusResultActions(1, request)
                 .andExpect(status().isNotFound());
-    }
-
-
-    // GET ALL BY PARAM __________________________________________________
-    void getAllByParam(final String query, final List<ProjectStatus> statuses) throws Exception {
-        List<ProjectEntity> entities = initProjectEntities();
-
-        List<ProjectResp> expected = ProjectFilter.filter(entities, query, statuses).stream()
-                .map(modelMapper::toProjectResp)
-                .toList();
-
-        String[] array = (statuses != null) ? statuses.stream()
-                .map(ProjectStatus::name)
-                .toArray(String[]::new) : null;
-
-        MockHttpServletRequestBuilder requestBuilder = get(URL + "s");
-        if (query != null) requestBuilder.param("query", query);
-        if (statuses != null) requestBuilder.param("statuses", array);
-
-        mvc.perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(asJsonString(expected)));
-    }
-
-    @Test
-    void getAllByParam_paramNull_200() throws Exception {
-        getAllByParam(null, null);
-    }
-
-    @Test
-    void getAllByParam_paramQuery_200() throws Exception {
-        final String search = "test";
-        getAllByParam(search, null);
-    }
-
-    @Test
-    void getAllByParam_paramStatuses_200() throws Exception {
-        List<ProjectStatus> statuses = List.of(ProjectStatus.DRAFT, ProjectStatus.FINISHED);
-        getAllByParam(null, statuses);
-    }
-
-    @Test
-    void getAllByParam_paramQueryAndStatuses_200() throws Exception {
-        final String search = "test";
-        List<ProjectStatus> statuses = List.of(ProjectStatus.DRAFT, ProjectStatus.FINISHED);
-        getAllByParam(search, statuses);
     }
 }

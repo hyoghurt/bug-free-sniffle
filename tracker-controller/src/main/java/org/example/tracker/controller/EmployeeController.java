@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.tracker.dto.employee.EmployeeFilterParam;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.error.ErrorResp;
@@ -100,9 +101,9 @@ public class EmployeeController {
             })
     @GetMapping(value = "/v1/employees",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeResp> getAllByQuery(@Parameter(description = "текстовое значение для поиска")
+    public List<EmployeeResp> getAllByParam(@Parameter(description = "текстовое значение для поиска")
                                             @RequestParam(required = false) String query) {
 
-        return employeeService.getAllByQuery(query);
+        return employeeService.getAllByParam(new EmployeeFilterParam(query));
     }
 }

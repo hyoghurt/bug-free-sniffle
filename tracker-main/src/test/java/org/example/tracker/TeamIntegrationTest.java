@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
-class TeamIntegrationTest extends BaseIntegrationTest {
+class TeamIntegrationTest extends Base {
     final String URL = "/v1/team";
 
     @Autowired

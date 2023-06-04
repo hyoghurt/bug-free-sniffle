@@ -72,7 +72,7 @@ public class ProjectController {
             })
     @GetMapping(value = "/v1/projects",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProjectResp> getAllByFilter(@Parameter(description = "текстовое значение для поиска")
+    public List<ProjectResp> getAllByParam(@Parameter(description = "текстовое значение для поиска")
                                             @RequestParam(required = false) String query,
                                             @Parameter(description = "список статусов для фильтра")
                                             @RequestParam(required = false) List<ProjectStatus> statuses) {

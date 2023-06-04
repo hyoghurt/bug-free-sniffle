@@ -1,35 +1,34 @@
-package org.example.tracker;
+package org.example.tracker.dao.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.tracker.dao.config.JpaConfig;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dao.repository.EmployeeRepository;
-import org.example.tracker.dao.repository.ProjectRepository;
-import org.example.tracker.dao.repository.TaskRepository;
+import org.example.tracker.dao.entity.TaskEntity;
 import org.example.tracker.dto.employee.EmployeeStatus;
-import org.example.tracker.service.mapper.ModelMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.example.tracker.dto.project.ProjectStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class BaseIntegrationTest extends ModelGenerate {
+@DataJpaTest
+@ContextConfiguration(classes = JpaConfig.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class Base {
 
     public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:14.4");
 
     @DynamicPropertySource
+    @SuppressWarnings("uncheck")
     public static void overrideProperties(DynamicPropertyRegistry registry) {
         container.start();
         registry.add("spring.datasource.url", container::getJdbcUrl);
@@ -37,35 +36,16 @@ class BaseIntegrationTest extends ModelGenerate {
         registry.add("spring.datasource.password", container::getPassword);
     }
 
-    MockMvc mvc;
-    @Autowired
-    WebApplicationContext context;
-    @Autowired
-    ObjectMapper mapper;
-    @Autowired
-    ModelMapper modelMapper;
-    @Autowired
-    TaskRepository taskRepository;
-    @Autowired
-    ProjectRepository projectRepository;
     @Autowired
     EmployeeRepository employeeRepository;
 
-    @BeforeEach
-    void setup() {
-        mvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
+    @Autowired
+    ProjectRepository projectRepository;
 
-        taskRepository.deleteAll();
-        projectRepository.deleteAll();
-        employeeRepository.deleteAll();
-    }
+    List<EmployeeEntity> employeeEntities;
 
-    String asJsonString(final Object obj) throws JsonProcessingException {
-        return mapper.writeValueAsString(obj);
-    }
+    List<ProjectEntity> projectEntities;
+
 
     public List<EmployeeEntity> initEmployeeEntities() {
         List<EmployeeEntity> entities = new ArrayList<>();
@@ -95,5 +75,39 @@ class BaseIntegrationTest extends ModelGenerate {
         entities.add(projectRepository.save(genProjectEntity("code3", "nameTest", "desc", "IN_TESTING")));
         entities.add(projectRepository.save(genProjectEntity("code43", "name", null, "DRAFT")));
         return entities;
+    }
+
+    public ProjectEntity genProjectEntity(String code, String name, String desc, String status) {
+        return ProjectEntity.builder()
+                .code(code)
+                .name(name)
+                .description(desc)
+                .status(ProjectStatus.valueOf(status))
+                .build();
+    }
+
+    public EmployeeEntity genEmployeeEntity(String firstName, String lastName, String middleName,
+                                            String email, String upn, String position, EmployeeStatus status) {
+        return EmployeeEntity.builder()
+                .upn(upn)
+                .firstName(firstName)
+                .lastName(lastName)
+                .middleName(middleName)
+                .position(position)
+                .email(email)
+                .status(status)
+                .build();
+    }
+
+    public TaskEntity genRandomTaskEntity(Integer authorId, EmployeeEntity assignees, ProjectEntity project, Instant created) {
+        return TaskEntity.builder()
+                .authorId(authorId)
+                .assignees(assignees)
+                .project(project)
+                .title(UUID.randomUUID().toString())
+                .createdDatetime(created)
+                .laborCostsInHours(1)
+                .deadlineDatetime(created.plus(5, ChronoUnit.HOURS))
+                .build();
     }
 }

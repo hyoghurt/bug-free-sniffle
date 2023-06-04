@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.repository.EmployeeRepository;
+import org.example.tracker.dao.repository.specification.EmployeeSpecs;
+import org.example.tracker.dto.employee.EmployeeFilterParam;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.employee.EmployeeStatus;
@@ -29,13 +31,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResp getById(Integer id) {
         log.info("get employee {}", id);
         EmployeeEntity entity = getEmployeeEntity(id);
-        return modelMapper.toEmployeeResp(entity);
-    }
-
-    @Override
-    public EmployeeResp getByUpn(String upn) {
-        EmployeeEntity entity = employeeRepository.findByUpnIgnoreCase(upn);
-        if (entity == null) throw new EmployeeNotFoundException("not found " + upn);
         return modelMapper.toEmployeeResp(entity);
     }
 
@@ -91,9 +86,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeResp> getAllByQuery(String query) {
-        log.info("get all by param: {}", query);
-        return employeeRepository.findAllByQuery(query).stream()
+    public List<EmployeeResp> getAllByParam(EmployeeFilterParam param) {
+        log.info("get all by param: {}", param);
+        return employeeRepository.findAll(EmployeeSpecs.byFilterParam(param)).stream()
                 .map(modelMapper::toEmployeeResp)
                 .collect(Collectors.toList());
     }

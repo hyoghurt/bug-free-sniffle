@@ -46,7 +46,6 @@ public class TeamController {
         teamService.addEmployeeToProject(projectId, request);
     }
 
-    //TODO test incorrect type /team/sdfdf/123
     @Operation(summary = "удаление",
             description = "Удалить сотрудника из команды проекта.",
             responses = {
@@ -65,7 +64,6 @@ public class TeamController {
         teamService.removeEmployeeFromProject(projectId, employeeId);
     }
 
-    //TODO test incorrect type /teams/sdfdf/123
     @Operation(summary = "получение",
             description = "Получить всех сотрудников проекта.",
             responses = {

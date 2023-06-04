@@ -8,17 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockUser
-class EmployeeIntegrationTest extends BaseIntegrationTest {
+class EmployeeIntegrationTest extends Base {
     final String URL = "/v1/employee";
 
 
@@ -147,38 +144,5 @@ class EmployeeIntegrationTest extends BaseIntegrationTest {
     void delete_notFound_404() throws Exception {
         deleteResultActions(1)
                 .andExpect(status().isNotFound());
-    }
-
-
-
-    // GET ALL BY PARAM ______________________________________________________
-    void getAllByParam(final String query) throws Exception {
-        List<EmployeeEntity> entities = initEmployeeEntities();
-        List<EmployeeResp> expected = EmployeeFilter.filter(entities, query).stream()
-                .map(modelMapper::toEmployeeResp)
-                .toList();
-
-        MockHttpServletRequestBuilder requestBuilder = get(URL + "s");
-        if (query != null) requestBuilder.param("query", query);
-
-        mvc.perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(asJsonString(expected)));
-    }
-
-    @Test
-    void getAllByParam_paramNull_200() throws Exception {
-        getAllByParam(null);
-    }
-
-    @Test
-    void getAllByParam_paramEmptyString_200() throws Exception {
-        getAllByParam("");
-    }
-
-    @Test
-    void getAllByParam_paramQuery_200() throws Exception {
-        getAllByParam("tEst");
     }
 }
