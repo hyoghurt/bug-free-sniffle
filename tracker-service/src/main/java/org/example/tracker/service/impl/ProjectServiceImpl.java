@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.example.tracker.dao.repository.specification.ProfileSpecs.byFilterParam;
+import static org.example.tracker.dao.specification.ProfileSpecs.byFilterParam;
 
 @Slf4j
 @Service

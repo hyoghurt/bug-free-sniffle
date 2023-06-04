@@ -4,7 +4,7 @@ import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TaskEntity;
 import org.example.tracker.dao.repository.helper.TaskFilter;
-import org.example.tracker.dao.repository.specification.TaskSpecs;
+import org.example.tracker.dao.specification.TaskSpecs;
 import org.example.tracker.dto.task.TaskFilterParam;
 import org.example.tracker.dto.task.TaskStatus;
 import org.junit.jupiter.api.AfterEach;

@@ -1,4 +1,4 @@
-package org.example.tracker.dao.repository.specification;
+package org.example.tracker.dao.specification;
 
 import jakarta.persistence.criteria.Predicate;
 import org.example.tracker.dao.entity.EmployeeEntity;

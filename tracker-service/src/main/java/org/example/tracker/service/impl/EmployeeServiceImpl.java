@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.repository.EmployeeRepository;
-import org.example.tracker.dao.repository.specification.EmployeeSpecs;
+import org.example.tracker.dao.specification.EmployeeSpecs;
 import org.example.tracker.dto.employee.EmployeeFilterParam;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;

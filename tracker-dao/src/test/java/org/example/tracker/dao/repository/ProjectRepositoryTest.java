@@ -2,7 +2,7 @@ package org.example.tracker.dao.repository;
 
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.repository.helper.ProjectFilter;
-import org.example.tracker.dao.repository.specification.ProfileSpecs;
+import org.example.tracker.dao.specification.ProfileSpecs;
 import org.example.tracker.dto.project.ProjectFilterParam;
 import org.example.tracker.dto.project.ProjectStatus;
 import org.junit.jupiter.api.AfterEach;

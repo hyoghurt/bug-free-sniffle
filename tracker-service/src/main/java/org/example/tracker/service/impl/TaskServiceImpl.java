@@ -23,7 +23,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.example.tracker.dao.repository.specification.TaskSpecs.byFilterParam;
+import static org.example.tracker.dao.specification.TaskSpecs.byFilterParam;
 
 @Slf4j
 @Service
