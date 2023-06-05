@@ -23,6 +23,7 @@ import java.util.List;
 @Tag(name = "team", description = "управление командами")
 @SecurityRequirement(name = "basicScheme")
 @ApiResponse(responseCode = "401", content = @Content)
+@RequestMapping("/teams")
 public class TeamController {
     private final TeamService teamService;
 
@@ -37,7 +38,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @PostMapping(value = "/v1/team/{projectId}",
+    @PostMapping(value = "/{projectId}",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public void addEmployee(@Parameter(description = "уникальный идентификатор проекта")
                             @PathVariable Integer projectId,
@@ -55,7 +56,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @DeleteMapping(value = "/v1/team/{projectId}/{employeeId}")
+    @DeleteMapping(value = "/{projectId}/employees/{employeeId}")
     public void removeEmployee(@Parameter(description = "уникальный идентификатор проекта")
                                @PathVariable Integer projectId,
                                @Parameter(description = "уникальный идентификатор сотрудника")
@@ -73,7 +74,7 @@ public class TeamController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @GetMapping(value = "/v1/team/{projectId}",
+    @GetMapping(value = "/{projectId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TeamResp> getAllEmployee(@Parameter(description = "уникальный идентификатор проекта")
                                          @PathVariable Integer projectId) {
