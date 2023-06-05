@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/tracker
@@ -18,15 +17,24 @@ spring:
     serialization:
       write-dates-as-timestamps: false
     date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties.mail.smtp.starttls.enable: true
 
 springdoc:
   version: 0.0.1
   swagger-ui:
     tagsSorter: alpha
     operationsSorter: method
-#  packages-to-scan: org.example.tracker.controller
-#  show-login-endpoint: true
 
 custom:
   security:
     permit-all: /swagger-ui/**, /v3/api-docs/**
+  mail:
+    enable: false
+    test:
+      enable: true
+      to: ${SMTP_TEST_TO}

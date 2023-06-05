@@ -185,7 +185,7 @@ class TaskIntegrationTest extends Base {
         projectEntity.setTeams(set);
         projectRepository.save(projectEntity);
 
-        TaskReq request = genRandomTaskReq(projectEntity.getId(), 23);
+        TaskReq request = genRandomTaskReq(projectEntity.getId(), authorEntity.getId() + 1);
 
         createResultActions(request)
                 .andExpect(status().isNotFound());
@@ -286,7 +286,7 @@ class TaskIntegrationTest extends Base {
         projectEntity.setTeams(set);
         projectRepository.save(projectEntity);
 
-        TaskEntity taskEntity = genRandomTaskEntity(authorEntity.getId(), assigneesEntity, projectEntity);
+        TaskEntity taskEntity = genRandomTaskEntity(authorEntity.getId(), null, projectEntity);
         taskRepository.save(taskEntity);
 
         TaskReq request = genRandomTaskReq(projectEntity.getId(), assigneesEntity.getId());
@@ -355,7 +355,7 @@ class TaskIntegrationTest extends Base {
         TaskEntity taskEntity = genRandomTaskEntity(authorEntity.getId(), assigneesEntity, projectEntity);
         taskRepository.save(taskEntity);
 
-        TaskReq request = genRandomTaskReq(3, null);
+        TaskReq request = genRandomTaskReq(projectEntity.getId() + 1, null);
 
         updateResultActions(taskEntity.getId(), request)
                 .andExpect(status().isNotFound());

@@ -45,4 +45,6 @@ public interface ProjectService {
     List<TeamResp> getAllTeamEmployee(Integer projectId);
 
     boolean isInTeam(ProjectEntity projectEntity, Integer employeeId);
+
+    boolean isInTeam(ProjectEntity projectEntity, String upn);
 }
