@@ -40,7 +40,7 @@ class ProjectControllerTest {
     @MockBean
     private ProjectService service;
 
-    private final String URL = "/v1/project";
+    private final String URL = "/projects";
 
 
     // CREATE ______________________________________________
@@ -68,7 +68,7 @@ class ProjectControllerTest {
     ResultActions getAllByParamResultActions(final String query, final List<String> statuses) throws Exception {
         String[] array = (statuses != null) ? statuses.toArray(String[]::new) : null;
 
-        MockHttpServletRequestBuilder requestBuilder = get(URL + "s");
+        MockHttpServletRequestBuilder requestBuilder = get(URL);
         if (query != null) requestBuilder.param("query", query);
         if (statuses != null) requestBuilder.param("statuses", array);
 

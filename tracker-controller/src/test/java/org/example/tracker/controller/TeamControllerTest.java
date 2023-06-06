@@ -5,7 +5,6 @@ import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamReq;
 import org.example.tracker.service.TeamService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -15,14 +14,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.doAnswer;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,7 +34,7 @@ class TeamControllerTest {
     @MockBean
     private TeamService service;
 
-    private final String URL = "/v1/team";
+    private final String URL = "/teams";
 
 
     // ADD __________________________________________________
@@ -49,7 +46,7 @@ class TeamControllerTest {
 
     // DELETED __________________________________________________
     ResultActions deleteResultActions(final Object id, final Object employeeId) throws Exception {
-        return mvc.perform(delete(URL + "/{id}/{emId}", id, employeeId));
+        return mvc.perform(delete(URL + "/{id}/employees/{emId}", id, employeeId));
     }
 
     // GET ALL __________________________________________________

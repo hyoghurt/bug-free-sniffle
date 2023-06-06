@@ -23,6 +23,7 @@ import java.util.List;
 @Tag(name = "project", description = "управление проектами")
 @SecurityRequirement(name = "basicScheme")
 @ApiResponse(responseCode = "401", content = @Content)
+@RequestMapping("/projects")
 public class ProjectController {
     private final ProjectService projectService;
 

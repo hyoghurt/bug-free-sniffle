@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WithMockUser
 class ProjectIntegrationTest extends Base {
-    final String URL = "/v1/project";
+    final String URL = "/projects";
 
 
     // CREATE ______________________________________________

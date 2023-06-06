@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WithMockUser
 class TeamIntegrationTest extends Base {
-    final String URL = "/v1/team";
+    final String URL = "/teams";
 
     @Autowired
     ProjectService projectService;
@@ -126,7 +126,7 @@ class TeamIntegrationTest extends Base {
 
     // DELETED __________________________________________________
     ResultActions deleteResultActions(final Integer id, final Integer employeeId) throws Exception {
-        return mvc.perform(delete(URL + "/{id}/{emId}", id, employeeId));
+        return mvc.perform(delete(URL + "/{id}/employees/{emId}", id, employeeId));
     }
 
     @Test
