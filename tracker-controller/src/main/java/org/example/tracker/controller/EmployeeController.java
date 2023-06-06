@@ -25,6 +25,7 @@ import java.util.List;
 @Tag(name = "employee", description = "управление сотрудниками")
 @SecurityRequirement(name = "basicScheme")
 @ApiResponse(responseCode = "401", content = @Content)
+@RequestMapping("/employees")
 public class EmployeeController {
     private final EmployeeService employeeService;
 
@@ -36,7 +37,7 @@ public class EmployeeController {
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "/v1/employee",
+    @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeResp create(@RequestBody @Valid EmployeeReq request) {
@@ -53,7 +54,7 @@ public class EmployeeController {
                     @ApiResponse(responseCode = "400",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @PutMapping(value = "/v1/employee/{id}",
+    @PutMapping(value = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeResp update(@Parameter(description = "уникальный идентификатор сотрудника")
@@ -70,7 +71,7 @@ public class EmployeeController {
                     @ApiResponse(responseCode = "404",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @DeleteMapping("/v1/employee/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@Parameter(description = "уникальный идентификатор сотрудника")
                        @PathVariable Integer id) {
 
@@ -84,8 +85,7 @@ public class EmployeeController {
                     @ApiResponse(responseCode = "404",
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
-    @GetMapping(value = "/v1/employee/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeResp getById(@Parameter(description = "уникальный идентификатор сотрудника")
                                 @PathVariable Integer id) {
 
@@ -99,8 +99,7 @@ public class EmployeeController {
             responses = {
                     @ApiResponse(responseCode = "200")
             })
-    @GetMapping(value = "/v1/employees",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EmployeeResp> getAllByParam(@Parameter(description = "текстовое значение для поиска")
                                             @RequestParam(required = false) String query) {
 
