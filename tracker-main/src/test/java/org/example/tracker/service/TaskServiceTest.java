@@ -1,4 +1,4 @@
-package org.example.tracker.main;
+package org.example.tracker.service;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
@@ -15,10 +15,6 @@ import org.example.tracker.dto.project.ProjectStatus;
 import org.example.tracker.dto.task.*;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamReq;
-import org.example.tracker.service.EmployeeService;
-import org.example.tracker.service.ProjectService;
-import org.example.tracker.service.TaskService;
-import org.example.tracker.service.TeamService;
 import org.example.tracker.service.exception.EmployeeAlreadyDeletedException;
 import org.example.tracker.service.exception.EmployeeNotFoundInTeamException;
 import org.example.tracker.service.exception.TaskStatusIncorrectFlowUpdateException;
@@ -67,8 +63,8 @@ class TaskServiceTest extends BaseTest {
         projectResp = projectService.create(projectReq);
 
         // add employee in team
-        TeamReq teamReq = genTeamReq(projectResp.getId(), employeeResp.getId(), EmployeeRole.ANALYST);
-        teamService.addEmployeeToProject(teamReq);
+        TeamReq teamReq = genTeamReq(employeeResp.getId(), EmployeeRole.ANALYST);
+        teamService.addEmployeeToProject(projectResp.getId(), teamReq);
     }
 
     EmployeeResp createRandomEmployee() {

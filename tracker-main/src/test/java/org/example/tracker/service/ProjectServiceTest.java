@@ -1,9 +1,8 @@
-package org.example.tracker.main;
+package org.example.tracker.service;
 
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.repository.ProjectRepository;
 import org.example.tracker.dto.project.*;
-import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.exception.DuplicateUniqueFieldException;
 import org.example.tracker.service.exception.ProjectStatusIncorrectFlowUpdateException;
 import org.junit.jupiter.api.BeforeEach;
@@ -118,18 +117,23 @@ class ProjectServiceTest extends BaseTest {
                 .query(search)
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(myFilter(entities, param), actual);
+        List<ProjectResp> actual = service.getAllByFilter(param);
+        assertEquals(entities.stream()
+                .filter(e -> e.getName().toUpperCase().contains(search.toUpperCase())
+                        || e.getCode().toUpperCase().contains(search.toUpperCase()))
+                .map(modelMapper::toProjectResp)
+                .collect(Collectors.toList()), actual);
     }
-
 
     @Test
     void filterNull() {
         ProjectFilterParam param = ProjectFilterParam.builder()
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(myFilter(entities, param), actual);
+        List<ProjectResp> actual = service.getAllByFilter(param);
+        assertEquals(entities.stream()
+                .map(modelMapper::toProjectResp)
+                .collect(Collectors.toList()), actual);
     }
 
     @Test
@@ -139,8 +143,11 @@ class ProjectServiceTest extends BaseTest {
                 .statuses(statuses)
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(myFilter(entities, param), actual);
+        List<ProjectResp> actual = service.getAllByFilter(param);
+        assertEquals(entities.stream()
+                .filter(e -> statuses.stream().anyMatch(s -> e.getStatus().equals(s)))
+                .map(modelMapper::toProjectResp)
+                .collect(Collectors.toList()), actual);
     }
 
     @Test
@@ -152,21 +159,15 @@ class ProjectServiceTest extends BaseTest {
                 .statuses(statuses)
                 .build();
 
-        List<ProjectResp> actual = service.findByParam(param);
-        assertEquals(myFilter(entities, param), actual);
-    }
-
-    List<ProjectResp> myFilter(List<ProjectEntity> entities, ProjectFilterParam filter) {
-        return entities.stream().filter(e ->
-                (
-                        filter.getQuery() == null
-                                || e.getCode().toUpperCase().contains(filter.getQuery().toUpperCase())
-                                || e.getName().toUpperCase().contains(filter.getQuery().toUpperCase())
-                ) && (
-                        filter.getStatuses() == null
-                                || filter.getStatuses().stream().anyMatch(s -> e.getStatus().equals(s))
+        List<ProjectResp> actual = service.getAllByFilter(param);
+        assertEquals(entities.stream()
+                .filter(e ->
+                        (e.getName().toUpperCase().contains(search.toUpperCase())
+                                || e.getCode().toUpperCase().contains(search.toUpperCase()))
+                                && statuses.stream().anyMatch(s -> e.getStatus().equals(s))
                 )
-        ).map(modelMapper::toProjectResp).toList();
+                .map(modelMapper::toProjectResp)
+                .collect(Collectors.toList()), actual);
     }
 
     ProjectResp createRandomProject() {

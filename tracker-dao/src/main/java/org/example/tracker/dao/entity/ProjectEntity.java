@@ -29,10 +29,10 @@ public class ProjectEntity {
     private String name;
     private String description;
 
+    @Builder.Default // https://www.baeldung.com/lombok-builder-default-value
     @Enumerated(EnumType.STRING)
     @Type(value = PostgreSQLEnumType.class) // нужен, если используется тип ENUM в Postgres https://vladmihalcea.com/the-best-way-to-map-an-enum-type-with-jpa-and-hibernate/
     @Column(columnDefinition = "project_status") // указываем как называется тип в Postgres
-    @Builder.Default // https://www.baeldung.com/lombok-builder-default-value
     private ProjectStatus status = ProjectStatus.DRAFT;
 
     @ElementCollection

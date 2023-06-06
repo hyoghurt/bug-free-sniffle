@@ -2,11 +2,12 @@ package org.example.tracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.team.TeamReq;
+import org.example.tracker.dto.team.TeamResp;
 import org.example.tracker.service.EmployeeService;
 import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.TeamService;
+import org.example.tracker.service.exception.EmployeeAlreadyDeletedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +19,12 @@ public class TeamServiceImpl implements TeamService {
     private final EmployeeService employeeService;
 
     @Override
-    public void addEmployeeToProject(TeamReq request) {
+    public void addEmployeeToProject(Integer projectId, TeamReq request) {
         EmployeeEntity employeeEntity = employeeService.getEmployeeEntity(request.getEmployeeId());
-        projectService.addEmployee(request.getProjectId(), employeeEntity, request.getRole());
+        if (employeeService.isDeleted(employeeEntity)) {
+            throw new EmployeeAlreadyDeletedException("employee already deleted " + employeeEntity.getId());
+        }
+        projectService.addEmployee(projectId, employeeEntity, request.getRole());
     }
 
     @Override
@@ -29,7 +33,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<EmployeeResp> getProjectEmployees(Integer projectId) {
-        return projectService.getAllEmployee(projectId);
+    public List<TeamResp> getProjectEmployees(Integer projectId) {
+        return projectService.getAllTeamEmployee(projectId);
     }
 }

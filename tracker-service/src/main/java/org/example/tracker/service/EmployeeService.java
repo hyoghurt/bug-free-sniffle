@@ -17,9 +17,11 @@ public interface EmployeeService {
 
     void delete(Integer id);
 
-    List<EmployeeResp> find(String query);
+    List<EmployeeResp> getAllByQuery(String query);
 
     EmployeeEntity getEmployeeEntity(Integer id);
 
     boolean isDeleted(EmployeeEntity entity);
+
+    EmployeeEntity getEmployeeEntityByUpn(String upn);
 }

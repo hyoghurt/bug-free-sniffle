@@ -1,4 +1,4 @@
-# DAO -----------------------------
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/tracker
@@ -12,3 +12,21 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:liquibase/changelog-root.xml
+  jackson:
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: true
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+
+springdoc:
+  version: 0.0.1
+  swagger-ui:
+    tagsSorter: alpha
+    operationsSorter: method
+#  packages-to-scan: org.example.tracker.controller
+#  show-login-endpoint: true
+
+custom:
+  security:
+    permit-all: /swagger-ui/**, /v3/api-docs/**

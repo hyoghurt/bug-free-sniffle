@@ -14,7 +14,7 @@ import java.util.List;
 public class TaskRepositoryCustomImpl extends BaseCriteriaRepository implements TaskRepositoryCustom {
 
     @Override
-    public List<TaskEntity> findByFilter(TaskFilterParam filter) {
+    public List<TaskEntity> findAllByFilter(TaskFilterParam filter) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TaskEntity> criteriaQuery = builder.createQuery(TaskEntity.class);
         Root<TaskEntity> root = criteriaQuery.from(TaskEntity.class);

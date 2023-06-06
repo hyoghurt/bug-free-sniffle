@@ -11,6 +11,7 @@ import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.task.TaskReq;
 import org.example.tracker.dto.task.TaskResp;
 import org.example.tracker.dto.team.EmployeeRole;
+import org.example.tracker.dto.team.TeamResp;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -74,18 +75,26 @@ public class ModelMapper {
     }
 
     public TaskResp toTaskResp(TaskEntity entity) {
-        return TaskResp.builder()
+        TaskResp dto = TaskResp.builder()
                 .id(entity.getId())
                 .projectId(entity.getProject().getId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .authorId(entity.getAuthorId())
-                .assigneesId(entity.getAssignees().getId())
                 .laborCostsInHours(entity.getLaborCostsInHours())
                 .createdDatetime(entity.getCreatedDatetime())
                 .updateDatetime(entity.getUpdateDatetime())
                 .deadlineDatetime(entity.getDeadlineDatetime())
+                .build();
+        if (entity.getAssignees() != null) dto.setAssigneesId(entity.getAssignees().getId());
+        return dto;
+    }
+
+    public TeamResp toTeamResp(TeamEmbeddable entity) {
+        return TeamResp.builder()
+                .employee(toEmployeeResp(entity.getEmployee()))
+                .role(entity.getRole())
                 .build();
     }
 }

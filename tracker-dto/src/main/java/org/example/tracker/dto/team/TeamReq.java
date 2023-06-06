@@ -1,13 +1,23 @@
 package org.example.tracker.dto.team;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TeamReq {
-    private int projectId; //required
-    private int employeeId; //required
-    private EmployeeRole role; //required
+
+    @Schema(description = "уникальный идентификатор сотрудника", example = "23")
+    @NotNull(message = "employeeId required")
+    private Integer employeeId;
+
+    @NotNull(message = "role required")
+    private EmployeeRole role;
 }

@@ -17,6 +17,7 @@ import org.example.tracker.service.exception.EmployeeNotFoundInTeamException;
 import org.example.tracker.service.exception.TaskNotFoundException;
 import org.example.tracker.service.exception.TaskStatusIncorrectFlowUpdateException;
 import org.example.tracker.service.mapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,12 +38,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskResp create(TaskReq request) {
-        //TODO controller validate createdDatetime + трудозатраты <= deadline
-        TaskEntity entity = modelMapper.toTaskEntity(request);
-
-        initAuthor(entity, 1, request.getProjectId());
-        initAssignees(entity, request.getAssigneesId(), request.getProjectId());
-
+        TaskEntity entity = validate(null, request);
         taskRepository.save(entity);
         return modelMapper.toTaskResp(entity);
     }
@@ -50,13 +46,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskResp update(Integer id, TaskReq request) {
-        TaskEntity entity = getTaskEntity(id);
-
-        initAuthor(entity, 1, request.getProjectId());
-        initAssignees(entity, request.getAssigneesId(), request.getProjectId());
+        TaskEntity entity = validate(id, request);
         entity.setUpdateDatetime(Instant.now());
-
-        taskRepository.save(entity);
         return modelMapper.toTaskResp(entity);
     }
 
@@ -83,28 +74,27 @@ public class TaskServiceImpl implements TaskService {
         entity.setStatus(request.getStatus());
     }
 
-    void initAuthor(TaskEntity taskEntity, Integer authorId, Integer projectId) {
-        // TODO get author id
+    private TaskEntity validate(Integer taskId, TaskReq request) {
+        TaskEntity entity = (taskId != null) ? getTaskEntity(taskId) : modelMapper.toTaskEntity(request);
+        String upn = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // проверка что автор в команде проекта
-        // TODO check author in project team
+        EmployeeEntity authorEntity = employeeService.getEmployeeEntityByUpn(upn);
+        EmployeeEntity assigneesEntity = (request.getAssigneesId() != null) ?
+                employeeService.getEmployeeEntity(request.getAssigneesId()) : null;
+        ProjectEntity projectEntity = projectService.getProjectEntity(request.getProjectId());
 
-        taskEntity.setAuthorId(authorId);
-    }
-
-    void initAssignees(TaskEntity taskEntity, Integer assigneesId, Integer projectId) {
-        EmployeeEntity assigneesEntity = (assigneesId != null) ?
-                employeeService.getEmployeeEntity(assigneesId) : null;
+        // проверка что сотрудники в команде
+        validateEmployeeInTeam(projectEntity, authorEntity);
+        validateEmployeeInTeam(projectEntity, assigneesEntity);
 
         // проверка что исполнитель не удален
         validateEmployeeNotDeleted(assigneesEntity);
 
-        // проверка что исполнитель в команде проекта
-        ProjectEntity projectEntity = projectService.getProjectEntity(projectId);
-        validateEmployeeInTeam(projectEntity, assigneesEntity);
+        entity.setProject(projectEntity);
+        entity.setAuthorId(authorEntity.getId());
+        entity.setAssignees(assigneesEntity);
 
-        taskEntity.setAssignees(assigneesEntity);
-        taskEntity.setProject(projectEntity);
+        return entity;
     }
 
     private void validateEmployeeInTeam(ProjectEntity projectEntity, EmployeeEntity employeeEntity) {

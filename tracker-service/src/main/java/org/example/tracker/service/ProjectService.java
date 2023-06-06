@@ -2,12 +2,12 @@ package org.example.tracker.service;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.project.ProjectFilterParam;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.project.ProjectUpdateStatusReq;
 import org.example.tracker.dto.team.EmployeeRole;
+import org.example.tracker.dto.team.TeamResp;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface ProjectService {
 
     ProjectResp update(Integer id, ProjectReq request);
 
-    List<ProjectResp> findByParam(ProjectFilterParam param);
+    List<ProjectResp> getAllByFilter(ProjectFilterParam filter);
 
     void updateStatus(Integer id, ProjectUpdateStatusReq request);
 
@@ -42,7 +42,7 @@ public interface ProjectService {
      *
      * @param projectId идентификатор проекта
      */
-    List<EmployeeResp> getAllEmployee(Integer projectId);
+    List<TeamResp> getAllTeamEmployee(Integer projectId);
 
     boolean isInTeam(ProjectEntity projectEntity, Integer employeeId);
 }

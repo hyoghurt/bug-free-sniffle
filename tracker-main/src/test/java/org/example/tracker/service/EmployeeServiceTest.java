@@ -1,14 +1,12 @@
-package org.example.tracker.main;
+package org.example.tracker.service;
 
 import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.repository.EmployeeRepository;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.employee.EmployeeStatus;
-import org.example.tracker.service.EmployeeService;
 import org.example.tracker.service.exception.DuplicateUniqueFieldException;
 import org.example.tracker.service.exception.EmployeeAlreadyDeletedException;
-import org.example.tracker.service.exception.RequiredFieldException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -77,12 +75,6 @@ class EmployeeServiceTest extends BaseTest {
     }
 
     @Test
-    void create_requiredFieldException() {
-        EmployeeReq request = EmployeeReq.builder().upn(UUID.randomUUID().toString()).build();
-        assertThrows(RequiredFieldException.class, () -> service.create(request));
-    }
-
-    @Test
     void update_alreadyDeletedException() {
         EmployeeResp resp = createRandomEmployee();
         service.delete(resp.getId());
@@ -104,7 +96,7 @@ class EmployeeServiceTest extends BaseTest {
         entities.add(repository.save(genEmployeeEntity("testFirst", "testLast", "testMiddle", "testEmail", "testUpn", "testPosition", EmployeeStatus.DELETED)));
 
         String search = "tEst";
-        List<EmployeeResp> actual = service.find(search);
+        List<EmployeeResp> actual = service.getAllByQuery(search);
         List<EmployeeResp> expected = entities.stream()
                 .filter(e -> (
                                 e.getFirstName().toUpperCase().contains(search.toUpperCase())

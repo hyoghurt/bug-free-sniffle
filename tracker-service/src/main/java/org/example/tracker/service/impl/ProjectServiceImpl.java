@@ -5,12 +5,12 @@ import org.example.tracker.dao.entity.EmployeeEntity;
 import org.example.tracker.dao.entity.ProjectEntity;
 import org.example.tracker.dao.entity.TeamEmbeddable;
 import org.example.tracker.dao.repository.ProjectRepository;
-import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.project.ProjectFilterParam;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.project.ProjectUpdateStatusReq;
 import org.example.tracker.dto.team.EmployeeRole;
+import org.example.tracker.dto.team.TeamResp;
 import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.exception.*;
 import org.example.tracker.service.mapper.ModelMapper;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.example.tracker.dao.repository.specification.ProfileSpecs.byFilterParam;
@@ -64,7 +65,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectResp> findByParam(ProjectFilterParam param) {
+    public List<ProjectResp> getAllByFilter(ProjectFilterParam param) {
         List<ProjectEntity> entities = projectRepository.findAll(
                 byFilterParam(param));
 
@@ -99,7 +100,8 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectEntity entity = getProjectEntity(projectId);
 
         // проверка что в команде нет такого сотрудника и нет такой роли
-        for (TeamEmbeddable emb : entity.getTeams()) {
+        Set<TeamEmbeddable> teams = entity.getTeams();
+        for (TeamEmbeddable emb : teams) {
             if (emb.getRole().equals(role)) {
                 throw new RoleAlreadyExistsInTeamException("role already exists - " + role.name());
             }
@@ -109,7 +111,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         TeamEmbeddable teamEmbeddable = modelMapper.toTeamEmbeddable(employee, role);
-        entity.getTeams().add(teamEmbeddable);
+        teams.add(teamEmbeddable);
     }
 
     @Override
@@ -128,10 +130,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public List<EmployeeResp> getAllEmployee(Integer projectId) {
+    public List<TeamResp> getAllTeamEmployee(Integer projectId) {
         ProjectEntity entity = getProjectEntity(projectId);
         return entity.getTeams().stream()
-                .map(team -> modelMapper.toEmployeeResp(team.getEmployee()))
+                .map(modelMapper::toTeamResp)
                 .collect(Collectors.toList());
     }
 
