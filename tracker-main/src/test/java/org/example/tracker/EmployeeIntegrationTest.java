@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WithMockUser
 class EmployeeIntegrationTest extends Base {
-    final String URL = "/v1/employee";
+    final String URL = "/employees";
 
 
     // GET BY ID _________________________________________

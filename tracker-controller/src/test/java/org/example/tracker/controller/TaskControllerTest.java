@@ -39,7 +39,7 @@ class TaskControllerTest {
     private ObjectMapper mapper;
     @MockBean
     private TaskService service;
-    private final String URL = "/v1/task";
+    private final String URL = "/tasks";
 
     // CREATE ____________________________________________
     ResultActions createResultActions(final TaskReq body) throws Exception {
@@ -124,7 +124,7 @@ class TaskControllerTest {
 
     @Test
     void getAllByParam_incorrectStatus_400() throws Exception {
-        mvc.perform(get(URL + "s").param("statuses", "DRAFT"))
+        mvc.perform(get(URL).param("statuses", "DRAFT"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -132,7 +132,7 @@ class TaskControllerTest {
     // incorrect datetime syntax ______________________________
     @Test
     void getAllByParam_incorrectDatetime_400() throws Exception {
-        mvc.perform(get(URL + "s").param("minCreatedDatetime", "1:23:023"))
+        mvc.perform(get(URL).param("minCreatedDatetime", "1:23:023"))
                 .andExpect(status().isBadRequest());
     }
 
