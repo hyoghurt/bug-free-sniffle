@@ -2,20 +2,21 @@ package org.example.tracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dao.entity.TaskEntity;
-import org.example.tracker.dao.repository.TaskRepository;
+import org.example.tracker.entity.EmployeeEntity;
+import org.example.tracker.entity.ProjectEntity;
+import org.example.tracker.entity.TaskEntity;
+import org.example.tracker.repository.TaskRepository;
 import org.example.tracker.dto.task.*;
-import org.example.tracker.service.EmailService;
 import org.example.tracker.service.EmployeeService;
 import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.TaskService;
-import org.example.tracker.service.exception.EmployeeAlreadyDeletedException;
-import org.example.tracker.service.exception.EmployeeNotFoundInTeamException;
-import org.example.tracker.service.exception.TaskNotFoundException;
-import org.example.tracker.service.exception.TaskStatusIncorrectFlowUpdateException;
-import org.example.tracker.service.mapper.ModelMapper;
+import org.example.tracker.amqp.MailProducer;
+import org.example.tracker.exception.EmployeeAlreadyDeletedException;
+import org.example.tracker.exception.EmployeeNotFoundInTeamException;
+import org.example.tracker.exception.TaskNotFoundException;
+import org.example.tracker.exception.TaskStatusIncorrectFlowUpdateException;
+import org.example.tracker.mapper.ModelMapper;
+import org.example.tracker.smtp.EmailService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import static org.example.tracker.dao.specification.TaskSpecs.byFilterParam;
+import static org.example.tracker.repository.specification.TaskSpecs.byFilterParam;
 
 @Slf4j
 @Service
@@ -35,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final EmployeeService employeeService;
     private final ProjectService projectService;
-    private final EmailService emailService;
+    private final MailProducer mailProducer;
 
     @Override
     public TaskResp create(TaskReq request) {
@@ -75,7 +76,7 @@ public class TaskServiceImpl implements TaskService {
         TaskStatus newStatus = request.getStatus();
         TaskStatus currentStatus = entity.getStatus();
         if (newStatus.ordinal() < currentStatus.ordinal()) {
-            log.warn("task status incorrect flow update {} -> {}", currentStatus.name(), newStatus.name());
+            log.info("task status incorrect flow update {} -> {}", currentStatus.name(), newStatus.name());
             throw new TaskStatusIncorrectFlowUpdateException(String
                     .format("task status incorrect flow update: %s -> %s",
                             currentStatus.name(),
@@ -146,7 +147,7 @@ public class TaskServiceImpl implements TaskService {
 
     private void validateEmployeeInTeam(ProjectEntity projectEntity, String upn) {
         if (!projectService.isInTeam(projectEntity, upn)) {
-            log.warn("employee {} not found in team {}", upn, projectEntity.getId());
+            log.info("employee {} not found in team {}", upn, projectEntity.getId());
             throw new EmployeeNotFoundInTeamException(String.format("employee{upn:%s} not found in team %d",
                     upn, projectEntity.getId()));
         }
@@ -155,7 +156,7 @@ public class TaskServiceImpl implements TaskService {
     private void validateEmployeeInTeam(ProjectEntity projectEntity, EmployeeEntity employeeEntity) {
         if (employeeEntity == null) return;
         if (!projectService.isInTeam(projectEntity, employeeEntity.getId())) {
-            log.warn("employee {} not found in team {}", employeeEntity.getId(), projectEntity.getId());
+            log.info("employee {} not found in team {}", employeeEntity.getId(), projectEntity.getId());
             throw new EmployeeNotFoundInTeamException(String.format("employee{id:%d} not found in team %d",
                     employeeEntity.getId(), projectEntity.getId()));
         }
@@ -164,7 +165,7 @@ public class TaskServiceImpl implements TaskService {
     private void validateEmployeeNotDeleted(EmployeeEntity employeeEntity) {
         if (employeeEntity == null) return;
         if (employeeService.isDeleted(employeeEntity)) {
-            log.warn("employee {} is deleted", employeeEntity.getId());
+            log.info("employee {} is deleted", employeeEntity.getId());
             throw new EmployeeAlreadyDeletedException("employee already deleted: " + employeeEntity.getId());
         }
     }
@@ -174,7 +175,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new TaskNotFoundException("task not found " + id));
     }
 
-    private boolean sendEmail(TaskEntity entity) {
+    private void sendEmail(TaskEntity entity) {
         EmployeeEntity assignees = entity.getAssignees();
         if (assignees != null && assignees.getEmail() != null) {
             String subject = "Новая задача";
@@ -187,8 +188,7 @@ public class TaskServiceImpl implements TaskService {
                     .text(text)
                     .build();
 
-            return emailService.send(details);
+            mailProducer.sendMail(details);
         }
-        return false;
     }
 }

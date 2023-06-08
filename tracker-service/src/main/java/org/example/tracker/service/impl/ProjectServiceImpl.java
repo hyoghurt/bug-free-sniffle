@@ -2,19 +2,19 @@ package org.example.tracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dao.entity.TeamEmbeddable;
-import org.example.tracker.dao.repository.ProjectRepository;
+import org.example.tracker.entity.EmployeeEntity;
+import org.example.tracker.entity.ProjectEntity;
+import org.example.tracker.entity.TeamEmbeddable;
+import org.example.tracker.repository.ProjectRepository;
 import org.example.tracker.dto.project.ProjectFilterParam;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.project.ProjectUpdateStatusReq;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamResp;
+import org.example.tracker.exception.*;
+import org.example.tracker.mapper.ModelMapper;
 import org.example.tracker.service.ProjectService;
-import org.example.tracker.service.exception.*;
-import org.example.tracker.service.mapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.example.tracker.dao.specification.ProfileSpecs.byFilterParam;
+import static org.example.tracker.repository.specification.ProfileSpecs.byFilterParam;
 
 @Slf4j
 @Service
@@ -86,7 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
         log.info("update status id: {} status: {}", id, request);
         ProjectEntity entity = getProjectEntity(id);
         if (request.getStatus().ordinal() < entity.getStatus().ordinal()) {
-            log.warn("incorrect flow update status id: {} status: {}", id, request);
+            log.info("incorrect flow update status id: {} status: {}", id, request);
             throw new ProjectStatusIncorrectFlowUpdateException(
                     String.format("project status incorrect flow update: %s -> %s",
                             entity.getStatus().name(),
@@ -112,11 +112,11 @@ public class ProjectServiceImpl implements ProjectService {
         Set<TeamEmbeddable> teams = entity.getTeams();
         for (TeamEmbeddable emb : teams) {
             if (emb.getRole().equals(role)) {
-                log.warn("role {} already exists in team {}", role, projectId);
+                log.info("role {} already exists in team {}", role, projectId);
                 throw new RoleAlreadyExistsInTeamException("role already exists - " + role.name());
             }
             if (emb.getEmployee().equals(employee)) {
-                log.warn("employee {} already exists in team {}", employee.getId(), projectId);
+                log.info("employee {} already exists in team {}", employee.getId(), projectId);
                 throw new EmployeeAlreadyExistsInTeamException("employee already exists - " + employee.getId());
             }
         }

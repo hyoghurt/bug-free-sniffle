@@ -3,7 +3,7 @@ package org.example.tracker.controller;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tracker.dto.error.ErrorResp;
-import org.example.tracker.service.exception.*;
+import org.example.tracker.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

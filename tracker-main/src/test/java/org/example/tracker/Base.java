@@ -2,11 +2,11 @@ package org.example.tracker;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.tracker.dao.repository.EmployeeRepository;
-import org.example.tracker.dao.repository.ProjectRepository;
-import org.example.tracker.dao.repository.TaskRepository;
+import org.example.tracker.repository.EmployeeRepository;
+import org.example.tracker.repository.ProjectRepository;
+import org.example.tracker.repository.TaskRepository;
 import org.example.tracker.helper.ModelGenerate;
-import org.example.tracker.service.mapper.ModelMapper;
+import org.example.tracker.mapper.ModelMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

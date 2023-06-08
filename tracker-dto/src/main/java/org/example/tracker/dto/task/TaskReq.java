@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.example.tracker.dto.annotation.DeadlineValid;
+import org.example.tracker.annotation.DeadlineValid;
 
 import java.time.Instant;
 
@@ -50,6 +50,5 @@ public class TaskReq {
             "Нельзя выбрать дату если дата меньше, чем  дата создания + трудозатраты.",
             example = "2020-04-28T00:00:00.000Z")
     @NotNull(message = "deadlineDatetime required")
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant deadlineDatetime;
 }

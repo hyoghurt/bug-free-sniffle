@@ -2,18 +2,18 @@ package org.example.tracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.repository.EmployeeRepository;
-import org.example.tracker.dao.specification.EmployeeSpecs;
+import org.example.tracker.entity.EmployeeEntity;
+import org.example.tracker.repository.EmployeeRepository;
+import org.example.tracker.repository.specification.EmployeeSpecs;
 import org.example.tracker.dto.employee.EmployeeFilterParam;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.service.EmployeeService;
-import org.example.tracker.service.exception.DuplicateUniqueFieldException;
-import org.example.tracker.service.exception.EmployeeAlreadyDeletedException;
-import org.example.tracker.service.exception.EmployeeNotFoundException;
-import org.example.tracker.service.mapper.ModelMapper;
+import org.example.tracker.exception.DuplicateUniqueFieldException;
+import org.example.tracker.exception.EmployeeAlreadyDeletedException;
+import org.example.tracker.exception.EmployeeNotFoundException;
+import org.example.tracker.mapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +47,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         log.info("update id: {} body: {}", id, request);
         EmployeeEntity entity = getEmployeeEntity(id);
         if (isDeleted(entity)) {
-            log.warn("employee {} is deleted", entity.getId());
+            log.info("employee {} is deleted", entity.getId());
             throw new EmployeeAlreadyDeletedException("employee already deleted: " + entity.getId());
         }
         mergeRequestToEntity(request, entity);
@@ -60,7 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepository.save(entity);
         } catch (DataIntegrityViolationException e) {
             if (e.getMessage().contains("employees_upn_key")) {
-                log.warn("duplicate upn: {}", entity.getUpn());
+                log.info("duplicate upn: {}", entity.getUpn());
                 throw new DuplicateUniqueFieldException("employee duplicate upn " + entity.getUpn());
             }
             throw e;
