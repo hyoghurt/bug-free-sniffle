@@ -22,6 +22,7 @@ jobs:
       run: mvn -B clean package
   docker:
     name: Push Docker image to Docker Hub
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
