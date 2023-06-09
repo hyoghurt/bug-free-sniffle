@@ -1,4 +1,4 @@
-package org.example.tracker.amqp;
+package org.example.tracker.amqp.config;
 
 import lombok.RequiredArgsConstructor;
 import org.example.tracker.property.AmqpProperties;
@@ -29,24 +29,24 @@ public class AmqpConfig {
 
     @Bean
     Queue mailQueue() {
-        return QueueBuilder.durable(properties.getMailQueue())
-                .withArgument("x-dead-letter-exchange", properties.getMailDlExchange())
+        return QueueBuilder.durable(properties.getNewTaskQueue())
+                .withArgument("x-dead-letter-exchange", properties.getNewTaskDlExchange())
                 .build();
     }
 
     @Bean
     Queue mailDeadLetterQueue() {
-        return QueueBuilder.durable(properties.getMailDlQueue()).build();
+        return QueueBuilder.durable(properties.getNewTaskDlQueue()).build();
     }
 
     @Bean
     DirectExchange mailExchange() {
-        return new DirectExchange(properties.getMailExchange());
+        return new DirectExchange(properties.getNewTaskExchange());
     }
 
     @Bean
     FanoutExchange mailDeadLetterExchange() {
-        return new FanoutExchange(properties.getMailDlExchange());
+        return new FanoutExchange(properties.getNewTaskDlExchange());
     }
 
     @Bean
@@ -54,7 +54,7 @@ public class AmqpConfig {
         return BindingBuilder
                 .bind(mailQueue())
                 .to(mailExchange())
-                .with(properties.getMailQueue());
+                .with(properties.getNewTaskQueue());
     }
 
     @Bean

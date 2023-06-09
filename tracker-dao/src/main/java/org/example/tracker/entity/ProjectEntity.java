@@ -35,6 +35,7 @@ public class ProjectEntity {
     @Column(columnDefinition = "project_status") // указываем как называется тип в Postgres
     private ProjectStatus status = ProjectStatus.DRAFT;
 
+    @ToString.Exclude
     @Builder.Default
     @ElementCollection
     @CollectionTable(joinColumns = @JoinColumn(name = "project_id"), name = "teams")

@@ -15,7 +15,7 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
     @Transactional
     @Modifying
     @Query("update EmployeeEntity e set e.status = 'DELETED' where e.id = ?1")
-    int updateStatusById(Integer id);
+    int updateSetStatusDeletedById(Integer id);
 
     Optional<EmployeeEntity> findByUpn(String upn);
 }

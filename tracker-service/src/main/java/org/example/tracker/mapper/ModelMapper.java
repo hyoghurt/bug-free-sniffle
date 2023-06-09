@@ -1,31 +1,18 @@
 package org.example.tracker.mapper;
 
+import org.example.tracker.dto.employee.EmployeeResp;
+import org.example.tracker.dto.project.ProjectResp;
+import org.example.tracker.dto.task.TaskResp;
+import org.example.tracker.dto.team.EmployeeRole;
+import org.example.tracker.dto.team.TeamResp;
 import org.example.tracker.entity.EmployeeEntity;
 import org.example.tracker.entity.ProjectEntity;
 import org.example.tracker.entity.TaskEntity;
 import org.example.tracker.entity.TeamEmbeddable;
-import org.example.tracker.dto.employee.EmployeeReq;
-import org.example.tracker.dto.employee.EmployeeResp;
-import org.example.tracker.dto.project.ProjectReq;
-import org.example.tracker.dto.project.ProjectResp;
-import org.example.tracker.dto.task.TaskReq;
-import org.example.tracker.dto.task.TaskResp;
-import org.example.tracker.dto.team.EmployeeRole;
-import org.example.tracker.dto.team.TeamResp;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ModelMapper {
-    public EmployeeEntity toEmployeeEntity(EmployeeReq dto) {
-        return EmployeeEntity.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .middleName(dto.getMiddleName())
-                .position(dto.getPosition())
-                .email(dto.getEmail())
-                .upn(dto.getUpn())
-                .build();
-    }
 
     public EmployeeResp toEmployeeResp(EmployeeEntity entity) {
         return EmployeeResp.builder()
@@ -37,23 +24,6 @@ public class ModelMapper {
                 .position(entity.getPosition())
                 .email(entity.getEmail())
                 .upn(entity.getUpn())
-                .build();
-    }
-
-    public ProjectEntity toProjectEntity(ProjectReq dto) {
-        return ProjectEntity.builder()
-                .code(dto.getCode())
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .build();
-    }
-
-    public TaskEntity toTaskEntity(TaskReq dto) {
-        return TaskEntity.builder()
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .laborCostsInHours(dto.getLaborCostsInHours())
-                .deadlineDatetime(dto.getDeadlineDatetime())
                 .build();
     }
 

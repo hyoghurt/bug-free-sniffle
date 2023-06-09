@@ -34,7 +34,7 @@ custom:
   mail:
     enable: false
   amqp:
-    mail-exchange: mail.exchange
-    mail-dl-exchange: mail.dl.exchange
-    mail-queue: mail.queue
-    mail-dl-queue: mail.dl.queue
+    new-task-exchange: new.task.exchange
+    new-task-dl-exchange: new.task.dl.exchange
+    new-task-queue: new.task.queue
+    new-task-dl-queue: new.task.dl.queue

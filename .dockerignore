@@ -1,6 +1,7 @@
 .git
 .idea
 .mvn
+.env
 .gitignore
 README.md
 docker-compose.yml

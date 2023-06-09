@@ -15,6 +15,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Embeddable
 public class TeamEmbeddable {
     @ManyToOne

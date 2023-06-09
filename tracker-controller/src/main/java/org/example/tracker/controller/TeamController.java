@@ -40,7 +40,7 @@ public class TeamController {
             })
     @PostMapping(value = "/{projectId}",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addEmployee(@Parameter(description = "уникальный идентификатор проекта")
+    public void addEmployee(@Parameter(description = "уникальный идентификатор проекта", example = "1")
                             @PathVariable Integer projectId,
                             @RequestBody @Valid TeamReq request) {
 
@@ -57,9 +57,9 @@ public class TeamController {
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
     @DeleteMapping(value = "/{projectId}/employees/{employeeId}")
-    public void removeEmployee(@Parameter(description = "уникальный идентификатор проекта")
+    public void removeEmployee(@Parameter(description = "уникальный идентификатор проекта", example = "1")
                                @PathVariable Integer projectId,
-                               @Parameter(description = "уникальный идентификатор сотрудника")
+                               @Parameter(description = "уникальный идентификатор сотрудника", example = "1")
                                @PathVariable Integer employeeId) {
 
         teamService.removeEmployeeFromProject(projectId, employeeId);
@@ -76,7 +76,7 @@ public class TeamController {
             })
     @GetMapping(value = "/{projectId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TeamResp> getAllEmployee(@Parameter(description = "уникальный идентификатор проекта")
+    public List<TeamResp> getAllEmployee(@Parameter(description = "уникальный идентификатор проекта", example = "1")
                                          @PathVariable Integer projectId) {
 
         return teamService.getProjectEmployees(projectId);

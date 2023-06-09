@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "custom.amqp")
 public class AmqpProperties {
-    private String mailExchange;
-    private String mailDlExchange;
-    private String mailQueue;
-    private String mailDlQueue;
+    private String newTaskExchange;
+    private String newTaskDlExchange;
+    private String newTaskQueue;
+    private String newTaskDlQueue;
 }

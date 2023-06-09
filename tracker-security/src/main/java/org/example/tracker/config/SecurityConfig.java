@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated());
 
         http.exceptionHandling(exception -> exception
-// TODO 403     .accessDeniedHandler()
+                .accessDeniedHandler(((request, response, accessDeniedException) ->
+                        response.setStatus(HttpStatus.FORBIDDEN.value())))
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
         http.logout(logout -> logout.logoutSuccessHandler(

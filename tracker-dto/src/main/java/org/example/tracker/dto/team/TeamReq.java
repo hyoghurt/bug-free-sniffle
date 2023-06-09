@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TeamReq {
 
-    @Schema(description = "уникальный идентификатор сотрудника", example = "23")
+    @Schema(description = "уникальный идентификатор сотрудника", example = "1")
     @NotNull(message = "employeeId required")
     private Integer employeeId;
 

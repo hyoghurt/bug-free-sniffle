@@ -24,10 +24,10 @@ spring:
     password: ${SMTP_PASSWORD}
     properties.mail.smtp.starttls.enable: true
   rabbitmq:
-    host: "localhost"
+    host: localhost
     port: 5672
-    username: "guest"
-    password: "guest"
+    username: guest
+    password: guest
     listener:
       simple:
         retry:
@@ -46,14 +46,14 @@ springdoc:
 
 custom:
   security:
-    permit-all: /swagger-ui/**, /v3/api-docs/**, /send/**
+    permit-all: /swagger-ui/**, /v3/api-docs/**
   mail:
     enable: false
     test:
       enable: true
       to: ${SMTP_TEST_TO}
   amqp:
-    mail-exchange: mail.exchange
-    mail-dl-exchange: mail.dl.exchange
-    mail-queue: mail.queue
-    mail-dl-queue: mail.dl.queue
+    new-task-exchange: new.task.exchange
+    new-task-dl-exchange: new.task.dl.exchange
+    new-task-queue: new.task.queue
+    new-task-dl-queue: new.task.dl.queue

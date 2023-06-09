@@ -14,11 +14,25 @@ services:
     env_file:
       - .env
     environment:
-      DATASOURCE_URL: ${DATASOURCE_URL}
-      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
-      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      DATASOURCE_URL:
+      DATASOURCE_USERNAME:
+      DATASOURCE_PASSWORD:
+      SPRING_RABBITMQ_HOST:
+      SPRING_RABBITMQ_USERNAME:
+      SPRING_RABBITMQ_PASSWORD:
+      SMTP_USERNAME:
+      SMTP_PASSWORD:
+      SMTP_TEST_TO:
     ports:
       - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 128M
 
   db:
     image: postgres:14.4
@@ -31,8 +45,6 @@ services:
       POSTGRES_DB: ${DATASOURCE_DB}
       POSTGRES_USER: ${DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
-    ports:
-      - "5432:5432"
     deploy:
       resources:
         limits:
@@ -51,12 +63,11 @@ services:
       - dev
     ports:
       - "15672:15672"
-      - "5672:5672"
     deploy:
       resources:
         limits:
           cpus: '0.50'
-          memory: 512M
+          memory: 1024M
         reservations:
           cpus: '0.25'
-          memory: 128M
+          memory: 512M
