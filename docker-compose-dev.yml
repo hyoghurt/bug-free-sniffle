@@ -2,7 +2,10 @@ version: "3.9"
 
 services:
   app:
-    image: hyoghurt/tracker-api
+    build: .
+    image: tracker-app
+    profiles:
+      - prod
     container_name: tracker-app
     restart: unless-stopped
     depends_on:
@@ -26,15 +29,24 @@ services:
   db:
     image: postgres:14.4
     container_name: postgres
+    profiles:
+      - prod
+      - dev
     restart: always
     environment:
       POSTGRES_DB: ${DATASOURCE_DB}
       POSTGRES_USER: ${DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
+    ports:
+      - "5432:5432"
 
   rabbitmq-m:
     image: rabbitmq:3-management
     container_name: rabbitmq-m
     restart: unless-stopped
+    profiles:
+      - prod
+      - dev
     ports:
       - "15672:15672"
+      - "5672:5672"
