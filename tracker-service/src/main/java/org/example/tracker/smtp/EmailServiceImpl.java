@@ -3,7 +3,7 @@ package org.example.tracker.smtp;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tracker.property.EmailProperties;
+import org.example.tracker.smtp.property.EmailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;

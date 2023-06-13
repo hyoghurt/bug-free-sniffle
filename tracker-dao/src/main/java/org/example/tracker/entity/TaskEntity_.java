@@ -1,12 +1,14 @@
 package org.example.tracker.entity;
 
 
+import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
 import org.example.tracker.dto.task.TaskStatus;
 
 import javax.annotation.processing.Generated;
 import java.time.Instant;
+import java.util.UUID;
 
 @Generated(value = "org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 @StaticMetamodel(TaskEntity.class)
@@ -22,4 +24,5 @@ public abstract class TaskEntity_ {
     public static volatile SingularAttribute<TaskEntity, Instant> createdDatetime;
     public static volatile SingularAttribute<TaskEntity, Instant> updateDatetime;
     public static volatile SingularAttribute<TaskEntity, Instant> deadlineDatetime;
+    public static volatile SetAttribute<TaskEntity, UUID> files;
 }

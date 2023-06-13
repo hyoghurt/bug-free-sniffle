@@ -1,4 +1,4 @@
-package org.example.tracker.property;
+package org.example.tracker.smtp.property;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

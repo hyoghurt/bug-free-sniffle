@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.example.tracker.dto.error.ErrorResp;
 import org.example.tracker.exception.*;
+import org.example.tracker.filesystemstorage.exception.StorageFileNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @RestControllerAdvice
 public class ExceptionController {
 
+/*
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ErrorResp> problem(final Throwable e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -36,6 +38,7 @@ public class ExceptionController {
                         .message(logRef + " : " + message)
                         .build());
     }
+*/
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResp> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
@@ -60,7 +63,8 @@ public class ExceptionController {
     @ExceptionHandler({
             EmployeeNotFoundException.class,
             ProjectNotFoundException.class,
-            TaskNotFoundException.class
+            TaskNotFoundException.class,
+            StorageFileNotFoundException.class
     })
     public ResponseEntity<ErrorResp> handleNotFound(RuntimeException ex) {
         HttpStatus status = HttpStatus.NOT_FOUND;

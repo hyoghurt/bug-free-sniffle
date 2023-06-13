@@ -36,7 +36,11 @@ spring:
           multiplier: 2
           max-interval: 10000
           max-attempts: 3
-#        default-requeue-rejected: false
+  # FILE STORAGE __________________________
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
 
 springdoc:
   version: 0.0.1
@@ -46,7 +50,7 @@ springdoc:
 
 custom:
   security:
-    permit-all: /swagger-ui/**, /v3/api-docs/**
+    permit-all: /swagger-ui/**, /v3/api-docs/**, /file/**
   mail:
     enable: false
     test:
@@ -57,3 +61,5 @@ custom:
     new-task-dl-exchange: new.task.dl.exchange
     new-task-queue: new.task.queue
     new-task-dl-queue: new.task.dl.queue
+  storage:
+    location: /tmp/test_upload_dir

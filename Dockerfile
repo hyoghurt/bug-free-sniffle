@@ -15,6 +15,8 @@ RUN mvn -B package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/tracker-main/target/app.jar app.jar
+RUN mkdir data
 RUN addgroup appusers && adduser -S appuser -G appusers
+RUN chown -R appuser:appusers /app
 USER appuser:appusers
 ENTRYPOINT ["java","-jar","/app/app.jar"]
