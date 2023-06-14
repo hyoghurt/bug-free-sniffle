@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <include file="changeset-1.0-create-employee-status-enum.xml" relativeToChangelogFile="true"/>
+    <include file="changeset-1.0-create-employees-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="changeset-1.0-create-project-status-enum.xml" relativeToChangelogFile="true"/>
+    <include file="changeset-1.0-create-projects-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="changeset-1.0-create-employee-role-enum.xml" relativeToChangelogFile="true"/>
+    <include file="changeset-1.0-create-teams-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="changeset-1.0-create-task-status-enum.xml" relativeToChangelogFile="true"/>
+    <include file="changeset-1.0-create-tasks-table.xml" relativeToChangelogFile="true"/>
+
+    <changeSet author="ilfat" id="v.1.0">
+        <tagDatabase tag="v.1.0"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,43 @@
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:liquibase/changelog-root.xml
+  jackson:
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: true
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test
+    password: test
+    properties.mail.smtp.starttls.enable: true
+
+springdoc:
+  version: 0.0.1
+  swagger-ui:
+    tagsSorter: alpha
+    operationsSorter: method
+
+custom:
+  security:
+    permit-all: /swagger-ui/**, /v3/api-docs/**
+  mail:
+    enable: false
+  amqp:
+    new-task-exchange: new.task.exchange
+    new-task-dl-exchange: new.task.dl.exchange
+    new-task-queue: new.task.queue
+    new-task-dl-queue: new.task.dl.queue
+  storage:
+    location: /tmp/test_upload_dir
+

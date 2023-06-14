@@ -7,16 +7,15 @@
     <parent>
         <groupId>org.example.tracker</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>tracker-controller</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.example.tracker</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tracker-service</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

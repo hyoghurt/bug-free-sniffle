@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="1.0-create-teams-table" author="ilfat">
+        <preConditions>
+            <not>
+                <tableExists tableName="teams"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="teams">
+            <column name="project_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_teams_project_id"
+                             references="projects(id)"/>
+            </column>
+            <column name="employee_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_teams_employee_id"
+                             references="employees(id)"/>
+            </column>
+            <column name="role" type="employee_role">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="teams" columnNames="project_id, employee_id"/>
+    </changeSet>
+
+</databaseChangeLog>

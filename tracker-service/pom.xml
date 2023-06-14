@@ -7,26 +7,31 @@
     <parent>
         <groupId>org.example.tracker</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>tracker-service</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.example.tracker</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tracker-dao</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.example.tracker</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tracker-dto</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.example.tracker</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tracker-security</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
     </dependencies>
 
