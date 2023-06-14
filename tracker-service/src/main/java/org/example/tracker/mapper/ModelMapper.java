@@ -1,5 +1,6 @@
 package org.example.tracker.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.task.TaskResp;
@@ -9,10 +10,15 @@ import org.example.tracker.entity.EmployeeEntity;
 import org.example.tracker.entity.ProjectEntity;
 import org.example.tracker.entity.TaskEntity;
 import org.example.tracker.entity.TeamEmbeddable;
+import org.example.tracker.service.FileService;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
+@RequiredArgsConstructor
 public class ModelMapper {
+    private final FileService fileService;
 
     public EmployeeResp toEmployeeResp(EmployeeEntity entity) {
         return EmployeeResp.builder()
@@ -56,6 +62,9 @@ public class ModelMapper {
                 .createdDatetime(entity.getCreatedDatetime())
                 .updateDatetime(entity.getUpdateDatetime())
                 .deadlineDatetime(entity.getDeadlineDatetime())
+                .files(entity.getFiles().stream()
+                        .map(fileService::toUrl)
+                        .collect(Collectors.toList()))
                 .build();
         if (entity.getAssignees() != null) dto.setAssigneesId(entity.getAssignees().getId());
         return dto;

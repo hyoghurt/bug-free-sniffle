@@ -1,7 +1,7 @@
 package org.example.tracker.amqp.config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.tracker.property.AmqpProperties;
+import org.example.tracker.amqp.property.AmqpProperties;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

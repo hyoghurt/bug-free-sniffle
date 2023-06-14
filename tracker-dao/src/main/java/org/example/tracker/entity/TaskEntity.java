@@ -9,7 +9,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
 import java.time.Instant;
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @Setter
@@ -51,6 +51,12 @@ public class TaskEntity {
     private Instant updateDatetime;
     private Instant deadlineDatetime;
 
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "tasks_files", joinColumns = @JoinColumn(name = "task_id"))
+    @Column(name = "file_id")
+    private Set<UUID> files = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,5 +68,9 @@ public class TaskEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    public void addFile(UUID fileId) {
+        files.add(fileId);
     }
 }

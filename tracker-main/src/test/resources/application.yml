@@ -38,3 +38,6 @@ custom:
     new-task-dl-exchange: new.task.dl.exchange
     new-task-queue: new.task.queue
     new-task-dl-queue: new.task.dl.queue
+  storage:
+    location: /tmp/test_upload_dir
+

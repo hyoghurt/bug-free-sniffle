@@ -15,14 +15,17 @@ import org.example.tracker.exception.TaskStatusIncorrectFlowUpdateException;
 import org.example.tracker.mapper.ModelMapper;
 import org.example.tracker.repository.TaskRepository;
 import org.example.tracker.service.EmployeeService;
+import org.example.tracker.service.FileService;
 import org.example.tracker.service.ProjectService;
 import org.example.tracker.service.TaskService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.example.tracker.repository.specification.TaskSpecs.byFilterParam;
@@ -36,6 +39,7 @@ public class TaskServiceImpl implements TaskService {
     private final EmployeeService employeeService;
     private final ProjectService projectService;
     private final NewTaskProducer newTaskProducer;
+    private final FileService fileService;
 
     @Override
     @Transactional
@@ -145,6 +149,15 @@ public class TaskServiceImpl implements TaskService {
         checkAuthorInTeam(entity.getProject());
         checkTaskStatusFlow(entity.getStatus(), request.getStatus());
         entity.setStatus(request.getStatus());
+    }
+
+    @Override
+    @Transactional
+    public String addFile(Integer taskId, MultipartFile file) {
+        TaskEntity taskEntity = getTaskEntity(taskId);
+        UUID fileId = fileService.save(file);
+        taskEntity.addFile(fileId);
+        return fileId.toString();
     }
 
     @Override

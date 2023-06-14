@@ -1,7 +1,6 @@
 INSERT INTO employees(first_name, last_name, middle_name, upn, status)
-    VALUES  ('test_1first', 'test_1last', 'test_1middle', 'test_1upn@com.com', 'ACTIVE'),
-            ('test_2first', 'test_2last', 'test_2middle', 'test_2upn@com.com', 'ACTIVE'),
-            ('test_3first', 'test_3last', 'test_3middle', 'test_3upn@com.com', 'ACTIVE');
+    VALUES  ('kek', 'kekov', 'kekovich', 'user@com.com', 'ACTIVE'),
+            ('kek2', 'kekov2', 'kekovich2', 'user2@com.com', 'ACTIVE');
 
 INSERT INTO projects(code, name, description, status)
     VALUES  ('test_1code', 'test_1name', 'test_1desc', 'DRAFT'),
@@ -10,11 +9,8 @@ INSERT INTO projects(code, name, description, status)
 
 INSERT INTO teams
     VALUES  (1, 1, 'ANALYST'),
-            (1, 2, 'TESTER'),
-            (1, 3, 'PROJECT_MANAGER'),
-            (2, 1, 'ANALYST'),
-            (2, 2, 'TESTER'),
-            (2, 3, 'PROJECT_MANAGER'),
-            (3, 1, 'ANALYST'),
-            (3, 2, 'TESTER'),
-            (3, 3, 'PROJECT_MANAGER');
+            (1, 2, 'TESTER');
+
+INSERT INTO tasks(project_id, title, author_id, status, labor_costs_in_hours, created_datetime, deadline_datetime)
+    VALUES  (1, 'title', 1, 'OPEN', 1, '2020-04-28T00:00:00.000Z', '2021-04-28T00:00:00.000Z' );
+

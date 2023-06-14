@@ -1,7 +1,7 @@
 package org.example.tracker.dto.task;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -37,4 +38,11 @@ public class TaskResp extends TaskReq {
             "(но не изменение статуса задачи).",
             example = "2020-04-28T00:00:00.000Z")
     private Instant updateDatetime;
+
+    @ArraySchema(
+            schema = @Schema(description = "URL файла привязанного к задаче.",
+                    example = "http://localhost:8080/file/5b1375eb-3f60-4ad9-881b-910b0fe24dcc")
+    )
+    private List<String> files;
+//            example = {@ExampleObject(value = "[\"A\"]")}
 }
