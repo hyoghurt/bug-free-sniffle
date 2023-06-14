@@ -16,7 +16,7 @@ public interface ProjectService {
 
     ProjectResp update(Integer id, ProjectReq request);
 
-    List<ProjectResp> getAllByFilter(ProjectFilterParam filter);
+    List<ProjectResp> getAllByParam(ProjectFilterParam param);
 
     void updateStatus(Integer id, ProjectUpdateStatusReq request);
 

@@ -10,6 +10,6 @@ import java.util.List;
 public interface TaskService {
     TaskResp create(TaskReq request);
     TaskResp update(Integer id, TaskReq request);
-    List<TaskResp> findByParam(TaskFilterParam param);
+    List<TaskResp> getAllByParam(TaskFilterParam param);
     void updateStatus(Integer id, TaskUpdateStatusReq request);
 }

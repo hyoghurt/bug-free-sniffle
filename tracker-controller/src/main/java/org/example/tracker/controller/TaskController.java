@@ -96,18 +96,18 @@ public class TaskController {
                             content = @Content(schema = @Schema(implementation = ErrorResp.class)))
             })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskResp> getAllByFilter(
-            @Parameter(description = "текстовая строка") String query,
-            @Parameter(description = "список статусов") List<TaskStatus> statuses,
-            @Parameter(description = "уникальный идентификатор автора") Integer authorId,
-            @Parameter(description = "уникальный идентификатор исполнителя") Integer assigneesId,
-            @Parameter(description = "минимальная дата+время создания") Instant minCreatedDatetime,
-            @Parameter(description = "максимальная дата+время создания") Instant maxCreatedDatetime,
-            @Parameter(description = "минимальная дата+время окончания") Instant minDeadlineDatetime,
-            @Parameter(description = "максимальная дата+время окончания") Instant maxDeadlineDatetime
+    public List<TaskResp> getAllByParam(
+            @Parameter(description = "текстовая строка") @RequestParam(required = false) String query,
+            @Parameter(description = "список статусов") @RequestParam(required = false) List<TaskStatus> statuses,
+            @Parameter(description = "уникальный идентификатор автора") @RequestParam(required = false) Integer authorId,
+            @Parameter(description = "уникальный идентификатор исполнителя") @RequestParam(required = false) Integer assigneesId,
+            @Parameter(description = "минимальная дата+время создания") @RequestParam(required = false) Instant minCreatedDatetime,
+            @Parameter(description = "максимальная дата+время создания") @RequestParam(required = false) Instant maxCreatedDatetime,
+            @Parameter(description = "минимальная дата+время окончания") @RequestParam(required = false) Instant minDeadlineDatetime,
+            @Parameter(description = "максимальная дата+время окончания") @RequestParam(required = false) Instant maxDeadlineDatetime
     ) {
 
-        return taskService.findByParam(TaskFilterParam.builder()
+        return taskService.getAllByParam(TaskFilterParam.builder()
                 .query(query)
                 .statuses(statuses)
                 .authorId(authorId)

@@ -38,7 +38,7 @@ public class EmployeeReq {
     private String upn;
 
     @Schema(description = "электронная почта", example = "dvornik@yandex.ru")
-    @Email
+    @Email(message = "email is not valid")
     @Size(max = 128, message = "length <= 128")
     private String email;
 }

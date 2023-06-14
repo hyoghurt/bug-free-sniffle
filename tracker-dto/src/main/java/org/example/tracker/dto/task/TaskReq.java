@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.example.tracker.dto.annotation.DeadlineValid;
 
 import java.time.Instant;
 
@@ -15,6 +16,7 @@ import java.time.Instant;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@DeadlineValid
 public class TaskReq {
 
     @Schema(description = "уникальный идентификатор проекта",
@@ -44,8 +46,6 @@ public class TaskReq {
     @NotNull(message = "laborCostsInHours required")
     private Integer laborCostsInHours;
 
-    //TODO change datetime -> date
-    //TODO create validate
     @Schema(description = "Крайний срок - дата, когда задача должна быть исполнена. " +
             "Нельзя выбрать дату если дата меньше, чем  дата создания + трудозатраты.",
             example = "2020-04-28T00:00:00.000Z")
