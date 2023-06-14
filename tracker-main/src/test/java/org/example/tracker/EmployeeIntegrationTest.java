@@ -1,6 +1,6 @@
 package org.example.tracker;
 
-import org.example.tracker.dao.entity.EmployeeEntity;
+import org.example.tracker.entity.EmployeeEntity;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeResp;
 import org.example.tracker.dto.employee.EmployeeStatus;

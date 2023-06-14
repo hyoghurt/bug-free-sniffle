@@ -2,19 +2,16 @@ package org.example.tracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dao.entity.TeamEmbeddable;
-import org.example.tracker.dao.repository.ProjectRepository;
-import org.example.tracker.dto.project.ProjectFilterParam;
-import org.example.tracker.dto.project.ProjectReq;
-import org.example.tracker.dto.project.ProjectResp;
-import org.example.tracker.dto.project.ProjectUpdateStatusReq;
+import org.example.tracker.dto.project.*;
 import org.example.tracker.dto.team.EmployeeRole;
 import org.example.tracker.dto.team.TeamResp;
+import org.example.tracker.entity.EmployeeEntity;
+import org.example.tracker.entity.ProjectEntity;
+import org.example.tracker.entity.TeamEmbeddable;
+import org.example.tracker.exception.*;
+import org.example.tracker.mapper.ModelMapper;
+import org.example.tracker.repository.ProjectRepository;
 import org.example.tracker.service.ProjectService;
-import org.example.tracker.service.exception.*;
-import org.example.tracker.service.mapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.example.tracker.dao.specification.ProfileSpecs.byFilterParam;
+import static org.example.tracker.repository.specification.ProfileSpecs.byFilterParam;
 
 @Slf4j
 @Service
@@ -35,7 +32,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResp create(ProjectReq request) {
         log.info("create: {}", request);
-        ProjectEntity entity = modelMapper.toProjectEntity(request);
+        ProjectEntity entity = new ProjectEntity();
+        mergeRequestToEntity(request, entity);
         save(entity);
         return modelMapper.toProjectResp(entity);
     }
@@ -47,6 +45,12 @@ public class ProjectServiceImpl implements ProjectService {
         mergeRequestToEntity(request, entity);
         save(entity);
         return modelMapper.toProjectResp(entity);
+    }
+
+    private void mergeRequestToEntity(ProjectReq request, ProjectEntity entity) {
+        entity.setCode(request.getCode());
+        entity.setName(request.getName());
+        entity.setDescription(request.getDescription());
     }
 
     private void save(ProjectEntity entity) {
@@ -63,19 +67,11 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private void mergeRequestToEntity(ProjectReq request, ProjectEntity entity) {
-        entity.setCode(request.getCode());
-        entity.setName(request.getName());
-        entity.setDescription(request.getDescription());
-    }
-
     @Override
     public List<ProjectResp> getAllByParam(ProjectFilterParam param) {
         log.info("get all by param: {}", param);
-        List<ProjectEntity> entities = projectRepository.findAll(
-                byFilterParam(param));
-
-        return entities.stream()
+        return projectRepository.findAll(byFilterParam(param))
+                .stream()
                 .map(modelMapper::toProjectResp)
                 .collect(Collectors.toList());
     }
@@ -85,69 +81,75 @@ public class ProjectServiceImpl implements ProjectService {
     public void updateStatus(Integer id, ProjectUpdateStatusReq request) {
         log.info("update status id: {} status: {}", id, request);
         ProjectEntity entity = getProjectEntity(id);
-        if (request.getStatus().ordinal() < entity.getStatus().ordinal()) {
-            log.warn("incorrect flow update status id: {} status: {}", id, request);
-            throw new ProjectStatusIncorrectFlowUpdateException(
-                    String.format("project status incorrect flow update: %s -> %s",
-                            entity.getStatus().name(),
-                            request.getStatus().name())
-            );
-        }
+        checkProjectStatusFlow(entity.getStatus(), request.getStatus());
         entity.setStatus(request.getStatus());
     }
 
-    @Override
-    public ProjectEntity getProjectEntity(Integer id) {
-        return projectRepository.findById(id)
-                .orElseThrow(() -> new ProjectNotFoundException("project not found " + id));
+    private void checkProjectStatusFlow(ProjectStatus currentStatus, ProjectStatus newStatus) {
+        if (newStatus.ordinal() < currentStatus.ordinal()) {
+            log.info("project status incorrect flow update {} -> {}", currentStatus.name(), newStatus.name());
+            throw new ProjectStatusIncorrectFlowUpdateException(
+                    String.format("project status incorrect flow update: %s -> %s",
+                            currentStatus.name(), newStatus.name())
+            );
+        }
     }
 
     @Override
     @Transactional
-    public void addEmployee(Integer projectId, EmployeeEntity employee, EmployeeRole role) {
-        log.info("add employee {} {} in project {}", employee.getId(), role, projectId);
+    public void addEmployee(Integer projectId, TeamEmbeddable teamEmbeddable) {
+        log.info("add employee {} in project {}", teamEmbeddable, projectId);
         ProjectEntity entity = getProjectEntity(projectId);
+        checkUniqueRoleAndEmployee(entity, teamEmbeddable);
+        entity.getTeams().add(teamEmbeddable);
+    }
 
-        // проверка что в команде нет такого сотрудника и нет такой роли
-        Set<TeamEmbeddable> teams = entity.getTeams();
+    private void checkUniqueRoleAndEmployee(ProjectEntity projectEntity, TeamEmbeddable teamEmbeddable) {
+        Set<TeamEmbeddable> teams = projectEntity.getTeams();
+        Integer projectId = projectEntity.getId();
         for (TeamEmbeddable emb : teams) {
+            EmployeeRole role = teamEmbeddable.getRole();
+            EmployeeEntity employee = teamEmbeddable.getEmployee();
             if (emb.getRole().equals(role)) {
-                log.warn("role {} already exists in team {}", role, projectId);
+                log.info("role {} already exists in team {}", role, projectId);
                 throw new RoleAlreadyExistsInTeamException("role already exists - " + role.name());
             }
             if (emb.getEmployee().equals(employee)) {
-                log.warn("employee {} already exists in team {}", employee.getId(), projectId);
+                log.info("employee {} already exists in team {}", employee.getId(), projectId);
                 throw new EmployeeAlreadyExistsInTeamException("employee already exists - " + employee.getId());
             }
         }
-
-        TeamEmbeddable teamEmbeddable = modelMapper.toTeamEmbeddable(employee, role);
-        teams.add(teamEmbeddable);
     }
 
     @Override
     @Transactional
     public void removeEmployee(Integer projectId, Integer employeeId) {
         log.info("remove employee {} from project {}", employeeId, projectId);
-        ProjectEntity entity = getProjectEntity(projectId);
+        ProjectEntity projectEntity = getProjectEntity(projectId);
 
         // находим сотрудика в проекте
-        TeamEmbeddable teamEmbeddable = entity.getTeams().stream()
+        TeamEmbeddable teamEmbeddable = projectEntity.getTeams().stream()
                 .filter(team -> team.getEmployee().getId().equals(employeeId))
                 .findFirst()
                 .orElseThrow(() -> new EmployeeNotFoundException("project team not found employee " + employeeId));
 
-        entity.getTeams().remove(teamEmbeddable);
+        projectEntity.getTeams().remove(teamEmbeddable);
     }
 
     @Override
     @Transactional
     public List<TeamResp> getAllTeamEmployee(Integer projectId) {
         log.info("get team {}", projectId);
-        ProjectEntity entity = getProjectEntity(projectId);
-        return entity.getTeams().stream()
+        return getProjectEntity(projectId).getTeams()
+                .stream()
                 .map(modelMapper::toTeamResp)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProjectEntity getProjectEntity(Integer id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new ProjectNotFoundException("project not found " + id));
     }
 
     @Override

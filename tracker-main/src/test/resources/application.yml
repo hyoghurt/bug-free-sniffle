@@ -33,3 +33,8 @@ custom:
     permit-all: /swagger-ui/**, /v3/api-docs/**
   mail:
     enable: false
+  amqp:
+    new-task-exchange: new.task.exchange
+    new-task-dl-exchange: new.task.dl.exchange
+    new-task-queue: new.task.queue
+    new-task-dl-queue: new.task.dl.queue

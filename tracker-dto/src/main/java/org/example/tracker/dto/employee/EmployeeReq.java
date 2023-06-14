@@ -33,7 +33,7 @@ public class EmployeeReq {
     private String position;
 
     @Schema(description = "учетная запись, но уникальное значение среди активных сотрудников",
-            example = "dvornik@dom.com")
+            example = "user@com.com")
     @Size(max = 128, message = "length <= 128")
     private String upn;
 

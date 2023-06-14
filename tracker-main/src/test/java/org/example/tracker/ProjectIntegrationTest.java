@@ -1,6 +1,6 @@
 package org.example.tracker;
 
-import org.example.tracker.dao.entity.ProjectEntity;
+import org.example.tracker.entity.ProjectEntity;
 import org.example.tracker.dto.project.ProjectReq;
 import org.example.tracker.dto.project.ProjectResp;
 import org.example.tracker.dto.project.ProjectStatus;

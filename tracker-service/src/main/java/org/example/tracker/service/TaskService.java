@@ -4,6 +4,7 @@ import org.example.tracker.dto.task.TaskFilterParam;
 import org.example.tracker.dto.task.TaskReq;
 import org.example.tracker.dto.task.TaskResp;
 import org.example.tracker.dto.task.TaskUpdateStatusReq;
+import org.example.tracker.entity.TaskEntity;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface TaskService {
     TaskResp update(Integer id, TaskReq request);
     List<TaskResp> getAllByParam(TaskFilterParam param);
     void updateStatus(Integer id, TaskUpdateStatusReq request);
+    TaskEntity getTaskEntity(Integer id);
 }

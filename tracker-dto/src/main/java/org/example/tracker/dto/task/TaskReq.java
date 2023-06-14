@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.example.tracker.dto.annotation.DeadlineValid;
+import org.example.tracker.annotation.DeadlineValid;
 
 import java.time.Instant;
 
@@ -20,7 +20,7 @@ import java.time.Instant;
 public class TaskReq {
 
     @Schema(description = "уникальный идентификатор проекта",
-            example = "23")
+            example = "1")
     @NotNull(message = "projectId required")
     private Integer projectId;
 
@@ -38,7 +38,7 @@ public class TaskReq {
     @Schema(description = "Исполнитель задачи - сотрудник, которому необходимо исполнить задачу. " +
             "Можно выбрать исполнителя только участника проекта (сотрудник добавленный в команду проекта). " +
             "Назначить исполнителя можно только сотрудника в статусе Активный.",
-            example = "42")
+            example = "1")
     private Integer assigneesId;
 
     @Schema(description = "Трудозатраты - оценка, сколько в часах необходимо на ее исполнение.",
@@ -48,8 +48,7 @@ public class TaskReq {
 
     @Schema(description = "Крайний срок - дата, когда задача должна быть исполнена. " +
             "Нельзя выбрать дату если дата меньше, чем  дата создания + трудозатраты.",
-            example = "2020-04-28T00:00:00.000Z")
+            example = "2024-04-28T00:00:00.000Z")
     @NotNull(message = "deadlineDatetime required")
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant deadlineDatetime;
 }

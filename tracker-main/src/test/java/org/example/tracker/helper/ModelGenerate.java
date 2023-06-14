@@ -1,8 +1,8 @@
 package org.example.tracker.helper;
 
-import org.example.tracker.dao.entity.EmployeeEntity;
-import org.example.tracker.dao.entity.ProjectEntity;
-import org.example.tracker.dao.entity.TaskEntity;
+import org.example.tracker.entity.EmployeeEntity;
+import org.example.tracker.entity.ProjectEntity;
+import org.example.tracker.entity.TaskEntity;
 import org.example.tracker.dto.employee.EmployeeReq;
 import org.example.tracker.dto.employee.EmployeeStatus;
 import org.example.tracker.dto.project.ProjectReq;

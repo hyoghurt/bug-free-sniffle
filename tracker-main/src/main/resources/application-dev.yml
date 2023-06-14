@@ -23,6 +23,20 @@ spring:
     username: ${SMTP_USERNAME}
     password: ${SMTP_PASSWORD}
     properties.mail.smtp.starttls.enable: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 2000
+          multiplier: 2
+          max-interval: 10000
+          max-attempts: 3
+#        default-requeue-rejected: false
 
 springdoc:
   version: 0.0.1
@@ -38,3 +52,8 @@ custom:
     test:
       enable: true
       to: ${SMTP_TEST_TO}
+  amqp:
+    new-task-exchange: new.task.exchange
+    new-task-dl-exchange: new.task.dl.exchange
+    new-task-queue: new.task.queue
+    new-task-dl-queue: new.task.dl.queue
