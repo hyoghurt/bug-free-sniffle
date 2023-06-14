@@ -155,4 +155,10 @@ public class ProjectServiceImpl implements ProjectService {
         return projectEntity.getTeams().stream()
                 .anyMatch(t -> t.getEmployee().getId().equals(employeeId));
     }
+
+    @Override
+    public boolean isInTeam(ProjectEntity projectEntity, String upn) {
+        return projectEntity.getTeams().stream()
+                .anyMatch(t -> t.getEmployee().getUpn().equals(upn));
+    }
 }

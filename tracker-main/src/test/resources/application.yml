@@ -1,9 +1,6 @@
 
 spring:
   datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: false
@@ -21,8 +18,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
+    username: test
+    password: test
     properties.mail.smtp.starttls.enable: true
 
 springdoc:
@@ -36,6 +33,3 @@ custom:
     permit-all: /swagger-ui/**, /v3/api-docs/**
   mail:
     enable: false
-    test:
-      enable: true
-      to: ${SMTP_TEST_TO}
